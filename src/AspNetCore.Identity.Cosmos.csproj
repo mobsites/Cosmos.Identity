@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <Company>Mobsites</Company>
     <Authors>Allan Mobley</Authors>
-    <Copyright>© 2018 Mobsites</Copyright>
+    <Copyright>© 2019 Mobsites</Copyright>
     <Description>ASP.NET Core Identity provider that uses Azure Cosmos.</Description>
     <PackageId>Mobsites.AspNetCore.Identity.Cosmos</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
