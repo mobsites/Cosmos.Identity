@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <Company>Mobsites</Company>
+    <Authors>Allan Mobley</Authors>
+    <Copyright>© 2018 Mobsites</Copyright>
+    <Description>ASP.NET Core Identity provider that uses Azure Cosmos.</Description>
+    <PackageId>Mobsites.AspNetCore.Identity.Cosmos</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>mobsites-logo.png</PackageIcon>
+    <PackageIconUrl />
+    <PackageReleaseNotes>Uses Microsoft.Azure.Cosmos v3.3.2.</PackageReleaseNotes>
+    <PackageTags>aspnetcore;identity;membership;cosmos;storage provider</PackageTags>
+    <PackageProjectUrl>https://mobsites.com</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.0-preview1.19508.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="assets\mobsites-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
