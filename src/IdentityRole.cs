@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AspNetCore.Identity.Cosmos
 {
-    public class IdentityUser : Microsoft.AspNetCore.Identity.IdentityUser
+    public class IdentityRole : Microsoft.AspNetCore.Identity.IdentityRole
     {
         private string id;
 
