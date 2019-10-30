@@ -17,6 +17,7 @@
     <PackageProjectUrl>https://mobsites.com</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</RepositoryUrl>
+    <RootNamespace>Mobsites.AspNetCore.Identity.Cosmos</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

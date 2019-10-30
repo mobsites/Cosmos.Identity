@@ -3,12 +3,12 @@
 
 using System;
 
-namespace AspNetCore.Identity.Cosmos
+namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents a claim that is granted to all users within a role.
+    ///     Represents a claim that a user possesses. 
     /// </summary>
-    public class IdentityRoleClaim : Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>
+    public class IdentityUserClaim : Microsoft.AspNetCore.Identity.IdentityUserClaim<string>
     {
         private string id;
 

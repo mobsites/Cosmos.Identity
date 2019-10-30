@@ -3,7 +3,7 @@
 
 using System;
 
-namespace AspNetCore.Identity.Cosmos
+namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
     ///     Represents a login and its associated provider for a user.

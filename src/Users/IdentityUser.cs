@@ -1,29 +1,26 @@
 ﻿// © 2019 Mobsites. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
-namespace AspNetCore.Identity.Cosmos
+namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents a claim that a user possesses. 
+    ///     The Cosmos required implementation of an identity user which uses a string as a primary key.
     /// </summary>
-    public class IdentityUserClaim : Microsoft.AspNetCore.Identity.IdentityUserClaim<string>
+    public class IdentityUser : Microsoft.AspNetCore.Identity.IdentityUser
     {
         private string id;
 
         /// <summary>
-        ///     Cosmos requires a string property named "id" as a primary key. 
-        ///     The base class "Id" property is of type int, and so must be hidden with the new keyword.
+        ///     Override base class property so that it can be serialized correctly as primary key "id" for Cosmos.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public new string Id
+        public override string Id
         {
             get => id;
             set
             {
-                id = value ?? Guid.NewGuid().ToString();
+                id = value ?? base.Id;
             }
         }
 

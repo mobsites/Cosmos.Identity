@@ -3,21 +3,22 @@
 
 using System;
 
-namespace AspNetCore.Identity.Cosmos
+namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents the link between a user and a role.
+    ///     Represents a claim that is granted to all users within a role.
     /// </summary>
-    public class IdentityUserRole : Microsoft.AspNetCore.Identity.IdentityUserRole<string>
+    public class IdentityRoleClaim : Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>
     {
         private string id;
 
         /// <summary>
         ///     Cosmos requires a string property named "id" as a primary key. 
+        ///     The base class "Id" property is of type int, and so must be hidden with the new keyword.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public string Id
+        public new string Id
         {
             get => id;
             set
