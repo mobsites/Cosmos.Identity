@@ -1,6 +1,7 @@
 ﻿// © 2019 Mobsites. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +28,15 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         ///     The <see cref="Task"/> that represents the asynchronous operation.
         /// </returns>
         Task RemoveAsync(TUserToken token);
+
+
+        /// <summary>
+        ///     Retrieves user tokens from store if any.
+        /// </summary>
+        /// <param name="userId">The token owner's id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The user token if it exists.</returns>
+        Task<IList<TUserToken>> GetTokensAsync(string userId, CancellationToken cancellationToken);
 
 
         /// <summary>

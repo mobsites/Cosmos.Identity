@@ -227,7 +227,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.
         /// </returns>
-        public override Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken = default)
+        public async override Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -237,7 +237,18 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return users.DeleteAsync(user, cancellationToken);
+            var result = await users.DeleteAsync(user, cancellationToken);
+
+            if (result.Succeeded)
+            {
+                // Cosmos does not know about foreign key relationships, so...
+                await RemoveFromRolesAsync(user, cancellationToken);
+                await RemoveClaimsAsync(user, cancellationToken);
+                await RemoveLoginsAsync(user, cancellationToken);
+                await RemoveUserTokensAsync(user, cancellationToken);
+            }
+
+            return result;
         }
 
         #endregion
@@ -408,6 +419,31 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     await userRoles.RemoveAsync(userRole, cancellationToken);
                 }
+            }
+        }
+
+
+        /// <summary>
+        ///     Removes user roles from the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to remove the roles from.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        ///     The <see cref="Task"/> that represents the asynchronous operation.
+        /// </returns>
+        protected async Task RemoveFromRolesAsync(TUser user,  CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            foreach (var roleName in await GetRolesAsync(user, cancellationToken) ?? new List<string>())
+            {
+                await RemoveFromRoleAsync(user, roleName.Normalize().ToUpperInvariant(), cancellationToken);
             }
         }
 
@@ -640,6 +676,26 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             }
         }
 
+
+        /// <summary>
+        ///     Removes user claims from the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to remove the claims from.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        protected async Task RemoveClaimsAsync(TUser user, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            
+            await RemoveClaimsAsync(user, await GetClaimsAsync(user, cancellationToken) ?? new List<Claim>(), cancellationToken);
+        }
+
         #endregion
 
         #region Get UserClaims
@@ -751,6 +807,29 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             }
         }
 
+
+        /// <summary>
+        ///     Removes users logins from the specified <paramref name="user"/>.
+        /// </summary>
+        /// <param name="user">The user to remove the logins from.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        protected async Task RemoveLoginsAsync(TUser user, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            foreach (var userLoginInfo in await GetLoginsAsync(user, cancellationToken) ?? new List<UserLoginInfo>())
+            {
+                await RemoveLoginAsync(user, userLoginInfo.LoginProvider, userLoginInfo.ProviderKey, cancellationToken);
+            }
+        }
+
         #endregion
 
         #region Get UserLogins
@@ -851,6 +930,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </returns>
         protected override Task AddUserTokenAsync(TUserToken token)
         {
+            ThrowIfDisposed();
+
+            if (token is null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
             return userTokens.AddAsync(token);
         }
 
@@ -859,7 +945,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         #region Remove UserToken
 
         /// <summary>
-        ///     Removes a new user token from the store.
+        ///     Removes a user token from the store.
         /// </summary>
         /// <param name="token">The token to remove.</param>
         /// <returns>
@@ -867,7 +953,38 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </returns>
         protected override Task RemoveUserTokenAsync(TUserToken token)
         {
+            ThrowIfDisposed();
+
+            if (token is null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
             return userTokens.RemoveAsync(token);
+        }
+
+
+        /// <summary>
+        ///     Removes all user tokens from the store.
+        /// </summary>
+        /// <param name="token">The token to remove.</param>
+        /// <returns>
+        ///     The <see cref="Task"/> that represents the asynchronous operation.
+        /// </returns>
+        protected async Task RemoveUserTokensAsync(TUser user, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            foreach (var token in await userTokens.GetTokensAsync(user.Id, cancellationToken) ?? new List<TUserToken>())
+            {
+                await userTokens.RemoveAsync(token);
+            }
         }
 
         #endregion
