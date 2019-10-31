@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     public interface IUserTokens<TUserToken>
-        where TUserToken : IdentityUserToken
+        where TUserToken : IdentityUserToken, new()
     {
         /// <summary>
         ///     Adds a new user token to the store.
@@ -21,7 +21,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
 
         /// <summary>
-        ///     Removes a new user token from the store.
+        ///     Removes a user token from the store.
         /// </summary>
         /// <param name="token">The token to remove.</param>
         /// <returns>
