@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
+    /// <summary>
+    ///     The interface to the identity users persistence store.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
     public interface IUsers<TUser>
         where TUser : IdentityUser
     {
