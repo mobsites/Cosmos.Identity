@@ -12,95 +12,11 @@ using System.Threading.Tasks;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents a new instance of a persistence store for users, using the default Cosmos no-partition key implementation.
-    /// </summary>
-    public class UserStore : UserStore<IdentityUser>
-    {
-        /// <summary>
-        ///     Constructs a new instance of <see cref="UserStore"/>.
-        /// </summary>
-        /// <param name="users">The context used to access the user store.</param>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="userRoles">The context used to access the userRole store.</param>
-        /// <param name="userClaims">The context used to access the userClaim store.</param>
-        /// <param name="userLogins">The context used to access the userLogin store.</param>
-        /// <param name="userTokens">The context used to access the userToken store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(
-            IUsers<IdentityUser> users,
-            IRoles<IdentityRole> roles,
-            IUserRoles<IdentityUserRole> userRoles,
-            IUserClaims<IdentityUserClaim> userClaims,
-            IUserLogins<IdentityUserLogin> userLogins,
-            IUserTokens<IdentityUserToken> userTokens,
-            IdentityErrorDescriber describer = null) : base(users, roles, userRoles, userClaims, userLogins, userTokens, describer) { }
-    }
-
-
-    /// <summary>
-    ///     Represents a new instance of a persistence store for the specified user type.
-    /// </summary>
-    /// /// <typeparam name="TUser">The type representing a user.</typeparam>
-    public class UserStore<TUser> : UserStore<TUser, IdentityRole>
-        where TUser : IdentityUser, new()
-    {
-        /// <summary>
-        ///     Constructs a new instance of <see cref="UserStore{TUser}"/>.
-        /// </summary>
-        /// <param name="users">The context used to access the user store.</param>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="userRoles">The context used to access the userRole store.</param>
-        /// <param name="userClaims">The context used to access the userClaim store.</param>
-        /// <param name="userLogins">The context used to access the userLogin store.</param>
-        /// <param name="userTokens">The context used to access the userToken store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(
-            IUsers<TUser> users,
-            IRoles<IdentityRole> roles,
-            IUserRoles<IdentityUserRole> userRoles,
-            IUserClaims<IdentityUserClaim> userClaims,
-            IUserLogins<IdentityUserLogin> userLogins,
-            IUserTokens<IdentityUserToken> userTokens,
-            IdentityErrorDescriber describer = null) : base(users, roles, userRoles, userClaims, userLogins, userTokens, describer) { }
-    }
-
-
-    /// <summary>
-    ///     Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    public class UserStore<TUser, TRole> : UserStore<TUser, TRole, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim>
-        where TUser : IdentityUser, new()
-        where TRole : IdentityRole, new()
-    {
-        /// <summary>
-        ///     Constructs a new instance of <see cref="UserStore{TUser, TRole}"/>.
-        /// </summary>
-        /// <param name="users">The context used to access the user store.</param>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="userRoles">The context used to access the userRole store.</param>
-        /// <param name="userClaims">The context used to access the userClaim store.</param>
-        /// <param name="userLogins">The context used to access the userLogin store.</param>
-        /// <param name="userTokens">The context used to access the userToken store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(
-            IUsers<TUser> users,
-            IRoles<TRole> roles,
-            IUserRoles<IdentityUserRole> userRoles,
-            IUserClaims<IdentityUserClaim> userClaims,
-            IUserLogins<IdentityUserLogin> userLogins,
-            IUserTokens<IdentityUserToken> userTokens,
-            IdentityErrorDescriber describer = null) : base(users, roles, userRoles, userClaims, userLogins, userTokens, describer) { }
-    }
-
-
-    /// <summary>
     ///     Represents a new instance of a persistence store for the specified types.
     /// </summary>
     /// <typeparam name="TUser">The type representing a user.</typeparam>
     /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
+    /// <typeparam name="TUserClaim">The type representing a user claim.</typeparam>
     /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
     /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
     /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
@@ -130,10 +46,10 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </summary>
         /// <param name="users">The context used to access the user store.</param>
         /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="userRoles">The context used to access the userRole store.</param>
-        /// <param name="userClaims">The context used to access the userClaim store.</param>
-        /// <param name="userLogins">The context used to access the userLogin store.</param>
-        /// <param name="userTokens">The context used to access the userToken store.</param>
+        /// <param name="userRoles">The context used to access the user role store.</param>
+        /// <param name="userClaims">The context used to access the user claim store.</param>
+        /// <param name="userLogins">The context used to access the user login store.</param>
+        /// <param name="userTokens">The context used to access the user token store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
         public UserStore(
             IUsers<TUser> users,

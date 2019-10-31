@@ -12,47 +12,11 @@ using System.Threading.Tasks;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Creates a new instance of a persistence store for roles.
+    ///     Represents a new instance of a persistence store for the specified types.
     /// </summary>
-    public class RoleStore : RoleStore<IdentityRole, IdentityUserRole, IdentityRoleClaim>
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore"/>.
-        /// </summary>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(
-            IRoles<IdentityRole> roles,
-            IRoleClaims<IdentityRoleClaim> roleClaims,
-            IdentityErrorDescriber describer = null) : base(roles, roleClaims, describer) { }
-    }
-
-
-    /// <summary>
-    ///     Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role</typeparam>
-    public class RoleStore<TRole> : RoleStore<TRole, IdentityUserRole, IdentityRoleClaim>
-        where TRole : IdentityRole, new()
-    {
-        /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore{TRole}"/>.
-        /// </summary>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(
-            IRoles<TRole> roles,
-            IRoleClaims<IdentityRoleClaim> roleClaims,
-            IdentityErrorDescriber describer = null) : base(roles, roleClaims, describer) { }
-    }
-
-
-    /// <summary>
-    ///     Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TUserRole">The type of the class representing a user role.</typeparam>
-    /// <typeparam name="TRoleClaim">The type of the class representing a role claim.</typeparam>
+    /// <typeparam name="TRole">The type representing a role.</typeparam>
+    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
+    /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
     public class RoleStore<TRole, TUserRole, TRoleClaim> :
         RoleStoreBase<TRole, string, TUserRole, TRoleClaim>
         where TRole : IdentityRole, new()
@@ -68,6 +32,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         ///     Constructs a new instance of <see cref="RoleStore{TRole, TUserRole, TRoleClaim}"/>.
         /// </summary>
         /// <param name="roles">The context used to access the role store.</param>
+        /// <param name="roleClaims">The context used to access the role claim store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
         public RoleStore(
             IRoles<TRole> roles,
