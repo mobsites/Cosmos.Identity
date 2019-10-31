@@ -155,12 +155,11 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>The user token if it exists.</returns>
         public async Task<TUserToken> FindAsync(string userId, string loginProvider, string name, CancellationToken cancellationToken)
         {
-            TUserToken userToken = new TUserToken();
-
             cancellationToken.ThrowIfCancellationRequested();
 
             try
             {
+                var userToken = new TUserToken();
                 var partitionKey = string.IsNullOrEmpty(userToken.PartitionKey) ? PartitionKey.None : new PartitionKey(userToken.PartitionKey);
 
                 // LINQ query generation
@@ -177,16 +176,16 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     // Should only be one.
                     foreach (var token in await feedIterator.ReadNextAsync())
                     {
-                        userToken = token;
+                        return token;
                     }
                 }
             }
             catch (CosmosException)
             {
-
+                
             }
 
-            return userToken;
+            return null;
         }
 
         #endregion

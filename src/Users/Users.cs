@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using System;
 using System.Linq;
 using System.Net;
@@ -16,7 +17,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// </summary>
     /// <typeparam name="TUser">The type representing a user.</typeparam>
     public class Users<TUser> : IUsers<TUser>
-        where TUser : IdentityUser
+        where TUser : IdentityUser, new()
     {
         #region Setup
 
@@ -209,20 +210,34 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="normalizedUserName"/> if it exists.
         /// </returns>
-        public Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public async Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            TUser user = null;
-
             cancellationToken.ThrowIfCancellationRequested();
 
             if (!string.IsNullOrEmpty(normalizedUserName))
             {
                 try
                 {
-                    user = cosmos.IdentityContainer.GetItemLinqQueryable<TUser>(allowSynchronousQueryExecution: true)
+                    var user = new TUser();
+                    var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
+
+                    // LINQ query generation
+                    var feedIterator = cosmos.IdentityContainer.GetItemLinqQueryable<TUser>(requestOptions: new QueryRequestOptions
+                        {
+                            PartitionKey = partitionKey
+                        })
                         .Where(u => u.NormalizedUserName == normalizedUserName)
-                        .ToList()
-                        .FirstOrDefault();
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        // Should only be one.
+                        foreach (var u in await feedIterator.ReadNextAsync())
+                        {
+                            return u;
+                        }
+                    }
                 }
                 catch (CosmosException)
                 {
@@ -230,7 +245,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 }
             }
 
-            return Task.FromResult(user);
+            return null;
         }
 
 
@@ -242,28 +257,42 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///      The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="normalizedEmail"/> if it exists.
         /// </returns>
-        public Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        public async Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
-            TUser user = null;
-
             cancellationToken.ThrowIfCancellationRequested();
 
             if (!string.IsNullOrEmpty(normalizedEmail))
             {
                 try
                 {
-                    user = cosmos.IdentityContainer.GetItemLinqQueryable<TUser>(allowSynchronousQueryExecution: true)
+                    var user = new TUser();
+                    var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
+
+                    // LINQ query generation
+                    var feedIterator = cosmos.IdentityContainer.GetItemLinqQueryable<TUser>(requestOptions: new QueryRequestOptions
+                        {
+                            PartitionKey = partitionKey
+                        })
                         .Where(u => u.NormalizedEmail == normalizedEmail)
-                        .ToList()
-                        .FirstOrDefault();
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        // Should only be one.
+                        foreach (var u in await feedIterator.ReadNextAsync())
+                        {
+                            return u;
+                        }
+                    }
                 }
                 catch (CosmosException)
                 {
-                    
+
                 }
             }
 
-            return Task.FromResult(user);
+            return null;
         }
 
         #endregion

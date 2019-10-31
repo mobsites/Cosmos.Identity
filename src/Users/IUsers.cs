@@ -13,7 +13,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// </summary>
     /// <typeparam name="TUser">The type representing a user.</typeparam>
     public interface IUsers<TUser>
-        where TUser : IdentityUser
+        where TUser : IdentityUser, new()
     {
         /// <summary>
         ///     A navigation property for the users the store contains.
