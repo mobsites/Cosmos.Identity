@@ -115,7 +115,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.
         /// </returns>
-        public override Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default)
+        public async override Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -125,7 +125,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return roles.DeleteAsync(role, cancellationToken);
+            var result = await roles.DeleteAsync(role, cancellationToken);
+            if (result.Succeeded)
+            {
+                await RemoveClaimsAsync(role, cancellationToken);
+            }
+
+            return result;
         }
 
         #endregion
@@ -162,7 +168,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return roles.FindByNameAsync(normalizedName, cancellationToken);
+            return roles.FindByNameAsync(normalizedName, cancellationToken); ;
         }
 
         #endregion
@@ -202,7 +208,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         #region Remove RoleClaim
 
         /// <summary>
-        ///     Removes the <paramref name="claim"/> given from the specified <paramref name="role"/>.
+        ///     Removes the given <paramref name="claim"/> from the specified <paramref name="role"/>.
         /// </summary>
         /// <param name="role">The role to remove the claim from.</param>
         /// <param name="claim">The claim to remove from the role.</param>
@@ -229,6 +235,29 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     await roleClaims.RemoveAsync(roleClaim, cancellationToken);
                 }
+            }
+        }
+
+
+        /// <summary>
+        ///     Removes user claims from the specified <paramref name="role"/>.
+        /// </summary>
+        /// <param name="role">The role to remove the claims from.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+        protected async Task RemoveClaimsAsync(TRole role, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (role is null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+
+            foreach (var claim in await GetClaimsAsync(role, cancellationToken) ?? new List<Claim>())
+            {
+                await RemoveClaimAsync(role, claim, cancellationToken);
             }
         }
 
