@@ -107,23 +107,23 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             {
                 try
                 {
-                    var userToken = new TUserToken();
-                    var partitionKey = string.IsNullOrEmpty(userToken.PartitionKey) ? PartitionKey.None : new PartitionKey(userToken.PartitionKey);
+                    var partitionKey = new TUserToken().PartitionKey;
 
                     // LINQ query generation
-                    var feedIterator = cosmos.IdentityContainer.GetItemLinqQueryable<TUserToken>(requestOptions: new QueryRequestOptions
+                    var feedIterator = cosmos.IdentityContainer
+                        .GetItemLinqQueryable<TUserToken>(requestOptions: new QueryRequestOptions
                         {
-                            PartitionKey = partitionKey
+                            PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
                         })
-                        .Where(u => u.UserId == userId)
+                        .Where(userToken => userToken.UserId == userId)
                         .ToFeedIterator();
 
                     //Asynchronous query execution
                     while (feedIterator.HasMoreResults)
                     {
-                        foreach (var token in await feedIterator.ReadNextAsync())
+                        foreach (var userToken in await feedIterator.ReadNextAsync())
                         {
-                            userTokens.Add(token);
+                            userTokens.Add(userToken);
                         }
                     }
                 }
@@ -154,15 +154,15 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             try
             {
-                var userToken = new TUserToken();
-                var partitionKey = string.IsNullOrEmpty(userToken.PartitionKey) ? PartitionKey.None : new PartitionKey(userToken.PartitionKey);
+                var partitionKey = new TUserToken().PartitionKey;
 
                 // LINQ query generation
-                var feedIterator = cosmos.IdentityContainer.GetItemLinqQueryable<TUserToken>(requestOptions: new QueryRequestOptions
+                var feedIterator = cosmos.IdentityContainer
+                    .GetItemLinqQueryable<TUserToken>(requestOptions: new QueryRequestOptions
                     {
-                        PartitionKey = partitionKey
+                        PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
                     })
-                    .Where(u => u.UserId == userId && u.LoginProvider == loginProvider && u.Name == name)
+                    .Where(userToken => userToken.UserId == userId && userToken.LoginProvider == loginProvider && userToken.Name == name)
                     .ToFeedIterator();
 
                 //Asynchronous query execution

@@ -217,15 +217,15 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             {
                 try
                 {
-                    var user = new TUser();
-                    var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
+                    var partitionKey = new TUser().PartitionKey;
 
                     // LINQ query generation
-                    var feedIterator = cosmos.IdentityContainer.GetItemLinqQueryable<TUser>(requestOptions: new QueryRequestOptions
+                    var feedIterator = cosmos.IdentityContainer
+                        .GetItemLinqQueryable<TUser>(requestOptions: new QueryRequestOptions
                         {
-                            PartitionKey = partitionKey
+                            PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
                         })
-                        .Where(u => u.NormalizedUserName == normalizedUserName)
+                        .Where(user => user.NormalizedUserName == normalizedUserName)
                         .ToFeedIterator();
 
                     //Asynchronous query execution
@@ -261,15 +261,15 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             {
                 try
                 {
-                    var user = new TUser();
-                    var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
+                    var partitionKey = new TUser().PartitionKey;
 
                     // LINQ query generation
-                    var feedIterator = cosmos.IdentityContainer.GetItemLinqQueryable<TUser>(requestOptions: new QueryRequestOptions
+                    var feedIterator = cosmos.IdentityContainer
+                        .GetItemLinqQueryable<TUser>(requestOptions: new QueryRequestOptions
                         {
-                            PartitionKey = partitionKey
+                            PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
                         })
-                        .Where(u => u.NormalizedEmail == normalizedEmail)
+                        .Where(user => user.NormalizedEmail == normalizedEmail)
                         .ToFeedIterator();
 
                     //Asynchronous query execution
