@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
+    /// <summary>
+    ///     The interface to the identity role claim persistence store.
+    /// </summary>
+    /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
     public interface IRoleClaims<TRoleClaim>
-        where TRoleClaim : IdentityRoleClaim
+        where TRoleClaim : IdentityRoleClaim, new()
     {
         /// <summary>
         ///     Adds the given <paramref name="roleClaim"/> to the store.
