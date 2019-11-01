@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
+    /// <summary>
+    ///     The interface to the identity user role persistence store.
+    /// </summary>
+    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
     public interface IUserRoles<TUserRole>
-        where TUserRole : IdentityUserRole
+        where TUserRole : IdentityUserRole, new()
     {
         /// <summary>
         ///     Adds the given <paramref name="userRole"/> to the store.
@@ -47,7 +51,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="roleId">The role's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The list of users if any.</returns>
-        Task<IList<TUser>> GetUsersAsync<TUser>(string roleId, CancellationToken cancellationToken);
+        Task<IList<TUser>> GetUsersAsync<TUser>(string roleId, CancellationToken cancellationToken)
+            where TUser : IdentityUser, new();
 
 
         /// <summary>

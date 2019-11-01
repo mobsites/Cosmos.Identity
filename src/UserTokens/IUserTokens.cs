@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
+    /// <summary>
+    ///     The interface to the identity user token persistence store.
+    /// </summary>
+    /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
     public interface IUserTokens<TUserToken>
         where TUserToken : IdentityUserToken, new()
     {

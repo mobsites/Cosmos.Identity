@@ -65,7 +65,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
 
-                    var response = await cosmos.IdentityContainer.CreateItemAsync(user, partitionKey, null, cancellationToken);
+                    var response = await cosmos.IdentityContainer.CreateItemAsync(user, partitionKey, cancellationToken: cancellationToken);
 
                     result = response.StatusCode >= HttpStatusCode.BadRequest ?
                         IdentityResult.Failed(new IdentityError() { Code = response.StatusCode.ToString(), Description = $"The user {user.UserName} was not created." }) :
@@ -108,7 +108,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
 
-                    var response = await cosmos.IdentityContainer.ReplaceItemAsync(user, user.Id, partitionKey, null, cancellationToken);
+                    var response = await cosmos.IdentityContainer.ReplaceItemAsync(user, user.Id, partitionKey, cancellationToken: cancellationToken);
 
                     result = response.StatusCode >= HttpStatusCode.BadRequest ?
                         IdentityResult.Failed(new IdentityError() { Code = response.StatusCode.ToString(), Description = $"The user {user.UserName} was not updated." }) :
@@ -151,7 +151,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
 
-                    var response = await cosmos.IdentityContainer.DeleteItemAsync<TUser>(user.Id, partitionKey, null, cancellationToken);
+                    var response = await cosmos.IdentityContainer.DeleteItemAsync<TUser>(user.Id, partitionKey, cancellationToken: cancellationToken);
 
                     result = response.StatusCode >= HttpStatusCode.BadRequest ?
                         IdentityResult.Failed(new IdentityError() { Code = response.StatusCode.ToString(), Description = $"The user {user.UserName} was not deleted." }) :
@@ -180,17 +180,16 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </returns>
         public async Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            TUser user = null;
-
             cancellationToken.ThrowIfCancellationRequested();
 
             if (!string.IsNullOrEmpty(userId))
             {
                 try
                 {
+                    var user = new TUser();
                     var partitionKey = string.IsNullOrEmpty(user.PartitionKey) ? PartitionKey.None : new PartitionKey(user.PartitionKey);
 
-                    user = await cosmos.IdentityContainer.ReadItemAsync<TUser>(userId, partitionKey, null, cancellationToken);
+                    return await cosmos.IdentityContainer.ReadItemAsync<TUser>(userId, partitionKey, cancellationToken: cancellationToken);
                 }
                 catch (CosmosException)
                 {
@@ -198,7 +197,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 }
             }
 
-            return user;
+            return null;
         }
 
 

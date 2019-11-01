@@ -107,10 +107,6 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             {
                 try
                 {
-                    userTokens = cosmos.IdentityContainer.GetItemLinqQueryable<TUserToken>(allowSynchronousQueryExecution: true)
-                        .Where(u => u.UserId == userId)
-                        .ToList();
-
                     var userToken = new TUserToken();
                     var partitionKey = string.IsNullOrEmpty(userToken.PartitionKey) ? PartitionKey.None : new PartitionKey(userToken.PartitionKey);
 
