@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
+    /// <summary>
+    ///     The interface to the identity user login persistence store.
+    /// </summary>
+    /// <typeparam name="TUserLogin">The type representing a user role.</typeparam>
     public interface IUserLogins<TUserLogin>
-        where TUserLogin : IdentityUserLogin
+        where TUserLogin : IdentityUserLogin, new()
     {
         /// <summary>
         ///     Adds the given <paramref name="userLogin"/> to the store.
@@ -45,7 +49,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
 
         /// <summary>
-        ///     Returns a user login with  provider, providerKey if it exists.
+        ///     Returns a user login with the matching provider and providerKey if it exists.
         /// </summary>
         /// <param name="loginProvider">The login provider name.</param>
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
@@ -55,7 +59,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
 
         /// <summary>
-        ///     Returns a user login with the matching userId, provider, providerKey if it exists.
+        ///     Returns a user login with the matching userId, provider, and providerKey if it exists.
         /// </summary>
         /// <param name="userId">The user's id.</param>
         /// <param name="loginProvider">The login provider name.</param>
