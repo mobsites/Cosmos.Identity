@@ -31,5 +31,16 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         [Newtonsoft.Json.JsonIgnore]
         [System.Text.Json.Serialization.JsonIgnore]
         public virtual string PartitionKey => null;
+
+
+        /// <summary>
+        ///     A comma-separated flatten list of the roles that a user has.
+        /// </summary>
+        public string Roles { get; set; }
+
+        /// <summary>
+        ///     A comma-separated flatten list of the role ids that a user has.
+        /// </summary>
+        public string RoleIds { get; set; }
     }
 }

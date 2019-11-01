@@ -298,6 +298,10 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             }
             
             await userRoles.AddAsync(CreateUserRole(user, role), cancellationToken);
+
+            // Update user object (default UserManager will actually call UpdateUserAsync(user).
+            user.Roles += role.Name + ",";
+            user.RoleIds += role.Id + ",";
         }
 
         #endregion
@@ -335,6 +339,16 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     await userRoles.RemoveAsync(userRole, cancellationToken);
                 }
+            }
+
+            // Update user object (default UserManager will actually call UpdateUserAsync(user).
+            if (!string.IsNullOrEmpty(user.Roles))
+            {
+                user.Roles.Replace(role.Name + ",", string.Empty);
+            }
+            if (!string.IsNullOrEmpty(user.RoleIds))
+            {
+                user.Roles.Replace(role.Id + ",", string.Empty);
             }
         }
 
@@ -385,7 +399,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return userRoles.GetRoleNamesAsync(user.Id, cancellationToken);
+            return userRoles.GetRoleNamesAsync<TUser>(user.Id, cancellationToken);
         }
 
         #endregion

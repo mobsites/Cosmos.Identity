@@ -42,7 +42,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="userId">The user's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The list of role names if any.</returns>
-        Task<IList<string>> GetRoleNamesAsync(string userId, CancellationToken cancellationToken);
+        Task<IList<string>> GetRoleNamesAsync<TUser>(string userId, CancellationToken cancellationToken)
+            where TUser : IdentityUser, new();
 
 
         /// <summary>
