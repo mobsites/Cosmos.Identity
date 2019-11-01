@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
+    /// <summary>
+    ///     The interface to the identity role persistence store.
+    /// </summary>
+    /// <typeparam name="TRole">The type representing a role.</typeparam>
     public interface IRoles<TRole>
-        where TRole : IdentityRole
+        where TRole : IdentityRole, new()
     {
         /// <summary>
         ///     A navigation property for the users the store contains.

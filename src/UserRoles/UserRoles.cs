@@ -23,7 +23,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         private readonly ICosmos cosmos;
 
         /// <summary>
-        ///     Constructs a new instance of <see cref="UserTokens{TUserToken}"/>.
+        ///     Constructs a new instance of <see cref="UserRoles{TUserRole}"/>.
         /// </summary>
         /// <param name="cosmos">The context in which to access the Cosmos Container for the identity store.</param>
         public UserRoles(ICosmos cosmos)
