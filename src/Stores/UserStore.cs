@@ -300,8 +300,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             await userRoles.AddAsync(CreateUserRole(user, role), cancellationToken);
 
             // Update user object (default UserManager will actually call UpdateUserAsync(user).
-            user.Roles += role.Name + ",";
-            user.RoleIds += role.Id + ",";
+            user.FlattenRoleNames += role.Name + ",";
+            user.FlattenRoleIds += role.Id + ",";
         }
 
         #endregion
@@ -342,13 +342,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             }
 
             // Update user object (default UserManager will actually call UpdateUserAsync(user).
-            if (!string.IsNullOrEmpty(user.Roles))
+            if (!string.IsNullOrEmpty(user.FlattenRoleNames))
             {
-                user.Roles.Replace(role.Name + ",", string.Empty);
+                user.FlattenRoleNames.Replace(role.Name + ",", string.Empty);
             }
-            if (!string.IsNullOrEmpty(user.RoleIds))
+            if (!string.IsNullOrEmpty(user.FlattenRoleIds))
             {
-                user.Roles.Replace(role.Id + ",", string.Empty);
+                user.FlattenRoleIds.Replace(role.Id + ",", string.Empty);
             }
         }
 
@@ -522,6 +522,9 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             foreach (var claim in claims)
             {
                 await userClaims.AddAsync(CreateUserClaim(user, claim), cancellationToken);
+
+                // Update user object (default UserManager will actually call UpdateUserAsync(user).
+                user.FlattenClaims += $"{claim.Type}|{claim.Value},";
             }
         }
 
@@ -564,6 +567,11 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     userClaim.ClaimValue = newClaim.Value;
 
                     await userClaims.UpdateAsync(userClaim, cancellationToken);
+
+                    if (!string.IsNullOrEmpty(user.FlattenClaims))
+                    {
+                        user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue}", $"{newClaim.Type}|{newClaim.Value}");
+                    }
                 }
             }
         }
@@ -601,6 +609,11 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     foreach (var userClaim in userClaimMatches)
                     {
                         await userClaims.RemoveAsync(userClaim, cancellationToken);
+
+                        if (!string.IsNullOrEmpty(user.FlattenClaims))
+                        {
+                            user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue},", string.Empty);
+                        }
                     }
                 }
             }

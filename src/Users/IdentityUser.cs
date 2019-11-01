@@ -36,11 +36,28 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <summary>
         ///     A comma-separated flatten list of the roles that a user has.
         /// </summary>
-        public string Roles { get; set; }
+        /// <remarks>
+        ///     Cosmos does not support document joins (that I am aware of), 
+        ///     so keeping a flatten list of type string allows for using built-in Contains() query on users without the need for a join.
+        /// </remarks>
+        public string FlattenRoleNames { get; set; }
 
         /// <summary>
         ///     A comma-separated flatten list of the role ids that a user has.
         /// </summary>
-        public string RoleIds { get; set; }
+        /// <remarks>
+        ///     Cosmos does not support document joins (that I am aware of), 
+        ///     so keeping a flatten list of type string allows for using built-in Contains() query on users without the need for a join.
+        /// </remarks>
+        public string FlattenRoleIds { get; set; }
+
+        /// <summary>
+        ///     A comma-separated flatten list of the claims that a user has.
+        /// </summary>
+        /// <remarks>
+        ///     Cosmos does not support document joins (that I am aware of), 
+        ///     so keeping a flatten list of type string allows for using built-in Contains() query on users without the need for a join.
+        /// </remarks>
+        public string FlattenClaims { get; set; }
     }
 }

@@ -119,9 +119,9 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
                     user =  await cosmos.IdentityContainer.ReadItemAsync<TUser>(userId, partitionKey, cancellationToken: cancellationToken);
 
-                    if (!string.IsNullOrEmpty(user.Roles))
+                    if (!string.IsNullOrEmpty(user.FlattenRoleNames))
                     {
-                        foreach (var roleName in user.Roles.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                        foreach (var roleName in user.FlattenRoleNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                         {
                             roleNames.Add(roleName);
                         }
@@ -165,7 +165,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                         {
                             PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
                         })
-                        .Where(user => !string.IsNullOrEmpty(user.RoleIds) && user.RoleIds.Contains(roleId))
+                        .Where(user => !string.IsNullOrEmpty(user.FlattenRoleIds) && user.FlattenRoleIds.Contains(roleId))
                         .ToFeedIterator();
 
                     //Asynchronous query execution
