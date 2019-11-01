@@ -121,7 +121,6 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     //Asynchronous query execution
                     while (feedIterator.HasMoreResults)
                     {
-                        // Should only be one.
                         foreach (var token in await feedIterator.ReadNextAsync())
                         {
                             userTokens.Add(token);
@@ -169,11 +168,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 //Asynchronous query execution
                 while (feedIterator.HasMoreResults)
                 {
-                    // Should only be one.
-                    foreach (var token in await feedIterator.ReadNextAsync())
-                    {
-                        return token;
-                    }
+                    // Should only be one, so...
+                    return (await feedIterator.ReadNextAsync()).First();
                 }
             }
             catch (CosmosException)

@@ -231,11 +231,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     //Asynchronous query execution
                     while (feedIterator.HasMoreResults)
                     {
-                        // Should only be one.
-                        foreach (var u in await feedIterator.ReadNextAsync())
-                        {
-                            return u;
-                        }
+                        // Should only be one, so...
+                        return (await feedIterator.ReadNextAsync()).First();
                     }
                 }
                 catch (CosmosException)
@@ -278,11 +275,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     //Asynchronous query execution
                     while (feedIterator.HasMoreResults)
                     {
-                        // Should only be one.
-                        foreach (var u in await feedIterator.ReadNextAsync())
-                        {
-                            return u;
-                        }
+                        // Should only be one, so...
+                        return (await feedIterator.ReadNextAsync()).First();
                     }
                 }
                 catch (CosmosException)
