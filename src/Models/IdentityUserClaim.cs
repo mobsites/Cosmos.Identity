@@ -6,18 +6,19 @@ using System;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents a login and its associated provider for a user.
+    ///     Represents a claim that a user possesses. 
     /// </summary>
-    public class IdentityUserLogin : Microsoft.AspNetCore.Identity.IdentityUserLogin<string>
+    public class IdentityUserClaim : Microsoft.AspNetCore.Identity.IdentityUserClaim<string>, ICosmosIdentity
     {
         private string id;
 
         /// <summary>
         ///     Cosmos requires a string property named "id" as a primary key. 
+        ///     The base class "Id" property is of type int, and so must be hidden with the new keyword.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public string Id
+        public new string Id
         {
             get => id;
             set

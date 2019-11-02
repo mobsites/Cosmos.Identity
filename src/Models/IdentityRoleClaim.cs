@@ -8,7 +8,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// <summary>
     ///     Represents a claim that is granted to all users within a role.
     /// </summary>
-    public class IdentityRoleClaim : Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>
+    public class IdentityRoleClaim : Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>, ICosmosIdentity
     {
         private string id;
 

@@ -1,28 +1,26 @@
 ﻿// © 2019 Mobsites. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents the link between a user and a role.
+    ///     The Cosmos required implementation of an identity role which uses a string as a primary key.
     /// </summary>
-    public class IdentityUserRole : Microsoft.AspNetCore.Identity.IdentityUserRole<string>
+    public class IdentityRole : Microsoft.AspNetCore.Identity.IdentityRole, ICosmosIdentity
     {
         private string id;
 
         /// <summary>
-        ///     Cosmos requires a string property named "id" as a primary key. 
+        ///     Override base class property so that it can be serialized correctly as primary key "id" for Cosmos.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public string Id
+        public override string Id
         {
             get => id;
             set
             {
-                id = value ?? Guid.NewGuid().ToString();
+                id = value ?? base.Id;
             }
         }
 

@@ -42,15 +42,9 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 typeof(IdentityUserRole),
                 typeof(IdentityRoleClaim));
 
+            builder.Services.TryAddScoped<ICosmosIdentityStorageProvider, CosmosIdentityStorageProvider>();
             builder.Services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(builder.UserType), userStoreType);
-            builder.Services.TryAddScoped(typeof(IUsers<>).MakeGenericType(builder.UserType), typeof(Users<>).MakeGenericType(builder.UserType));
-            builder.Services.TryAddScoped(typeof(IUserClaims<>).MakeGenericType(typeof(IdentityUserClaim)), typeof(UserClaims<>).MakeGenericType(typeof(IdentityUserClaim)));
-            builder.Services.TryAddScoped(typeof(IUserRoles<>).MakeGenericType(typeof(IdentityUserRole)), typeof(UserRoles<>).MakeGenericType(typeof(IdentityUserRole)));
-            builder.Services.TryAddScoped(typeof(IUserLogins<>).MakeGenericType(typeof(IdentityUserLogin)), typeof(UserLogins<>).MakeGenericType(typeof(IdentityUserLogin)));
-            builder.Services.TryAddScoped(typeof(IUserTokens<>).MakeGenericType(typeof(IdentityUserToken)), typeof(UserTokens<>).MakeGenericType(typeof(IdentityUserToken)));
             builder.Services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(builder.RoleType), roleStoreType);
-            builder.Services.TryAddScoped(typeof(IRoles<>).MakeGenericType(builder.RoleType), typeof(Roles<>).MakeGenericType(builder.RoleType));
-            builder.Services.TryAddScoped(typeof(IRoleClaims<>).MakeGenericType(typeof(IdentityRoleClaim)), typeof(RoleClaims<>).MakeGenericType(typeof(IdentityRoleClaim)));
 
             return builder;
         }
@@ -115,15 +109,9 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 typeof(TUserRole),
                 typeof(TRoleClaim));
 
+            builder.Services.TryAddScoped<ICosmosIdentityStorageProvider, CosmosIdentityStorageProvider>();
             builder.Services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(builder.UserType), userStoreType);
-            builder.Services.TryAddScoped(typeof(IUsers<>).MakeGenericType(builder.UserType), typeof(Users<>).MakeGenericType(builder.UserType));
-            builder.Services.TryAddScoped(typeof(IUserClaims<>).MakeGenericType(typeof(TUserClaim)), typeof(UserClaims<>).MakeGenericType(typeof(TUserClaim)));
-            builder.Services.TryAddScoped(typeof(IUserRoles<>).MakeGenericType(typeof(TUserRole)), typeof(UserRoles<>).MakeGenericType(typeof(TUserRole)));
-            builder.Services.TryAddScoped(typeof(IUserLogins<>).MakeGenericType(typeof(TUserLogin)), typeof(UserLogins<>).MakeGenericType(typeof(TUserLogin)));
-            builder.Services.TryAddScoped(typeof(IUserTokens<>).MakeGenericType(typeof(TUserToken)), typeof(UserTokens<>).MakeGenericType(typeof(TUserToken)));
             builder.Services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(builder.RoleType), roleStoreType);
-            builder.Services.TryAddScoped(typeof(IRoles<>).MakeGenericType(builder.RoleType), typeof(Roles<>).MakeGenericType(builder.RoleType));
-            builder.Services.TryAddScoped(typeof(IRoleClaims<>).MakeGenericType(typeof(TRoleClaim)), typeof(RoleClaims<>).MakeGenericType(typeof(TRoleClaim)));
 
             return builder;
         }

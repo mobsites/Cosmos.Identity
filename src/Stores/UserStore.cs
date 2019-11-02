@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,52 +36,27 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     {
         #region Setup
 
-        private readonly IUsers<TUser> users;
-        private readonly IRoles<TRole> roles;
-        private readonly IUserRoles<TUserRole> userRoles;
-        private readonly IUserClaims<TUserClaim> userClaims;
-        private readonly IUserLogins<TUserLogin> userLogins;
-        private readonly IUserTokens<TUserToken> userTokens;
+        private readonly ICosmosIdentityStorageProvider storageProvider;
 
         /// <summary>
         ///     Constructs a new instance of <see cref="UserStore{TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim}"/>.
         /// </summary>
-        /// <param name="users">The context used to access the user store.</param>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="userRoles">The context used to access the user role store.</param>
-        /// <param name="userClaims">The context used to access the user claim store.</param>
-        /// <param name="userLogins">The context used to access the user login store.</param>
-        /// <param name="userTokens">The context used to access the user token store.</param>
+        /// /// <param name="storageProvider">The provider used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(
-            IUsers<TUser> users,
-            IRoles<TRole> roles,
-            IUserRoles<TUserRole> userRoles,
-            IUserClaims<TUserClaim> userClaims,
-            IUserLogins<TUserLogin> userLogins,
-            IUserTokens<TUserToken> userTokens,
-            IdentityErrorDescriber describer = null) : base(describer ?? new IdentityErrorDescriber())
+        public UserStore(ICosmosIdentityStorageProvider storageProvider, IdentityErrorDescriber describer = null) 
+            : base(describer ?? new IdentityErrorDescriber())
         {
-            this.users = users ?? throw new ArgumentNullException(nameof(users));
-            this.roles = roles ?? throw new ArgumentNullException(nameof(roles));
-            this.userRoles = userRoles ?? throw new ArgumentNullException(nameof(userRoles));
-            this.userClaims = userClaims ?? throw new ArgumentNullException(nameof(userClaims));
-            this.userLogins = userLogins ?? throw new ArgumentNullException(nameof(userLogins));
-            this.userTokens = userTokens ?? throw new ArgumentNullException(nameof(userTokens));
+            this.storageProvider = storageProvider ?? throw new ArgumentNullException(nameof(storageProvider));
         }
 
         #endregion
 
         #region User Store
 
-        #region Users
-
         /// <summary>
         ///     A navigation property for the users the store contains.
         /// </summary>
-        public override IQueryable<TUser> Users => users.Queryable;
-
-        #endregion
+        public override IQueryable<TUser> Users => storageProvider.Queryable<TUser>();
 
         #region Create User
 
@@ -101,7 +78,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return users.CreateAsync(user, cancellationToken);
+            return storageProvider.CreateAsync(user, cancellationToken);
         }
 
         #endregion
@@ -128,7 +105,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             user.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-            return users.UpdateAsync(user, cancellationToken);
+            return storageProvider.UpdateAsync(user, cancellationToken);
         }
 
         #endregion
@@ -153,7 +130,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var result = await users.DeleteAsync(user, cancellationToken);
+            var result = await storageProvider.DeleteAsync(user, cancellationToken);
 
             if (result.Succeeded)
             {
@@ -184,7 +161,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return users.FindByIdAsync(userId, cancellationToken);
+            return storageProvider.FindByIdAsync<TUser>(userId, cancellationToken);
         }
 
 
@@ -201,7 +178,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return users.FindByIdAsync(userId, cancellationToken);
+            return storageProvider.FindByIdAsync<TUser>(userId, cancellationToken);
         }
 
 
@@ -213,12 +190,34 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="normalizedUserName"/> if it exists.
         /// </returns>
-        public override Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default)
+        public async override Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return users.FindByNameAsync(normalizedUserName, cancellationToken);
+            if (!string.IsNullOrEmpty(normalizedUserName))
+            {
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TUser>()
+                        .Where(user => user.NormalizedUserName == normalizedUserName)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        // Should only be one, so...
+                        return (await feedIterator.ReadNextAsync()).First();
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return null;
         }
 
 
@@ -230,12 +229,34 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///      The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="normalizedEmail"/> if it exists.
         /// </returns>
-        public override Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default)
+        public async override Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return users.FindByEmailAsync(normalizedEmail, cancellationToken);
+            if (!string.IsNullOrEmpty(normalizedEmail))
+            {
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TUser>()
+                        .Where(user => user.NormalizedEmail == normalizedEmail)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        // Should only be one, so...
+                        return (await feedIterator.ReadNextAsync()).First();
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return null;
         }
 
         #endregion
@@ -252,12 +273,36 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="normalizedRoleName">The normalized role name.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The role if it exists.</returns>
-        protected override Task<TRole> FindRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        protected async override Task<TRole> FindRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return roles.FindByNameAsync(normalizedRoleName, cancellationToken);
+            if (!string.IsNullOrEmpty(normalizedRoleName))
+            {
+                try
+                {
+                    var partitionKey = new TRole().PartitionKey;
+
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TRole>()
+                        .Where(role => role.NormalizedName == normalizedRoleName)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        // Should only be one, so...
+                        return (await feedIterator.ReadNextAsync()).First();
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return null;
         }
 
         #endregion
@@ -297,11 +342,14 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new InvalidOperationException($"{normalizedRoleName} does not exist.");
             }
             
-            await userRoles.AddAsync(CreateUserRole(user, role), cancellationToken);
+            var result = await storageProvider.CreateAsync(CreateUserRole(user, role), cancellationToken);
 
-            // Update user object (default UserManager will actually call UpdateUserAsync(user).
-            user.FlattenRoleNames += role.Name + ",";
-            user.FlattenRoleIds += role.Id + ",";
+            if (result.Succeeded)
+            {
+                // Update user object (default UserManager will actually call UpdateUserAsync(user).
+                user.FlattenRoleNames += role.Name + ",";
+                user.FlattenRoleIds += role.Id + ",";
+            }
         }
 
         #endregion
@@ -337,18 +385,21 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 var userRole = await FindUserRoleAsync(user.Id, role.Id, cancellationToken);
                 if (userRole != null)
                 {
-                    await userRoles.RemoveAsync(userRole, cancellationToken);
-                }
-            }
+                    var result = await storageProvider.DeleteAsync(userRole, cancellationToken);
 
-            // Update user object (default UserManager will actually call UpdateUserAsync(user).
-            if (!string.IsNullOrEmpty(user.FlattenRoleNames))
-            {
-                user.FlattenRoleNames.Replace(role.Name + ",", string.Empty);
-            }
-            if (!string.IsNullOrEmpty(user.FlattenRoleIds))
-            {
-                user.FlattenRoleIds.Replace(role.Id + ",", string.Empty);
+                    if (result.Succeeded)
+                    {
+                        // Update user object (default UserManager will actually call UpdateUserAsync(user).
+                        if (!string.IsNullOrEmpty(user.FlattenRoleNames))
+                        {
+                            user.FlattenRoleNames.Replace(role.Name + ",", string.Empty);
+                        }
+                        if (!string.IsNullOrEmpty(user.FlattenRoleIds))
+                        {
+                            user.FlattenRoleIds.Replace(role.Id + ",", string.Empty);
+                        }
+                    }
+                }
             }
         }
 
@@ -382,15 +433,17 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         #region Get UserRoles
 
         /// <summary>
-        ///     Retrieves the roles the specified <paramref name="user"/> is a member of.
+        ///     Retrieves the names of the roles the specified <paramref name="user"/> is a member of.
         /// </summary>
         /// <param name="user">The user whose roles should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
-        ///     A <see cref="Task{TResult}"/> that contains the roles the user is a member of.
+        ///     A <see cref="Task{TResult}"/> that contains the names of the roles the user is a member of.
         /// </returns>
         public override Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken = default)
         {
+            IList<string> roleNames = new List<string>();
+
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
@@ -399,7 +452,22 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return userRoles.GetRoleNamesAsync<TUser>(user.Id, cancellationToken);
+            try
+            {
+                if (!string.IsNullOrEmpty(user.FlattenRoleNames))
+                {
+                    foreach (var roleName in user.FlattenRoleNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        roleNames.Add(roleName);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Task.FromResult(roleNames);
         }
 
         #endregion
@@ -451,12 +519,31 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="roleId">The role's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user role if it exists.</returns>
-        protected override Task<TUserRole> FindUserRoleAsync(string userId, string roleId, CancellationToken cancellationToken = default)
+        protected async override Task<TUserRole> FindUserRoleAsync(string userId, string roleId, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return userRoles.FindAsync(userId, roleId, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUserRole>()
+                    .Where(userRole => userRole.UserId == userId && userRole.RoleId == roleId)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    // Should only be one, so...
+                    return (await feedIterator.ReadNextAsync()).First();
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return null;
         }
 
         #endregion
@@ -473,6 +560,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </returns>
         public async override Task<IList<TUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default)
         {
+            IList<TUser> users = new List<TUser>();
+
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
@@ -484,10 +573,29 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             var role = await FindRoleAsync(normalizedRoleName, cancellationToken);
             if (role != null)
             {
-                return await userRoles.GetUsersAsync<TUser>(normalizedRoleName, cancellationToken);
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TUser>()
+                        .Where(user => !string.IsNullOrEmpty(user.FlattenRoleIds) && user.FlattenRoleIds.Contains(role.Id))
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        foreach (var user in await feedIterator.ReadNextAsync())
+                        {
+                            users.Add(user);
+                        }
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
             }
 
-            return new List<TUser>();
+            return users;
         }
 
         #endregion
@@ -521,10 +629,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             foreach (var claim in claims)
             {
-                await userClaims.AddAsync(CreateUserClaim(user, claim), cancellationToken);
+                var result = await storageProvider.CreateAsync(CreateUserClaim(user, claim), cancellationToken);
 
-                // Update user object (default UserManager will actually call UpdateUserAsync(user).
-                user.FlattenClaims += $"{claim.Type}|{claim.Value},";
+                if (result.Succeeded)
+                {
+                    // Update user object (default UserManager will actually call UpdateUserAsync(user).
+                    user.FlattenClaims += $"{claim.Type}|{claim.Value},";
+                }
             }
         }
 
@@ -558,16 +669,15 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(newClaim));
             }
 
-            var userClaimMatches = await userClaims.FindAsync(user.Id, claim, cancellationToken);
-            if (userClaimMatches != null)
+            foreach (var userClaim in await FindClaimsAsync(user.Id, claim, cancellationToken))
             {
-                foreach (var userClaim in userClaimMatches)
+                userClaim.ClaimType = newClaim.Type;
+                userClaim.ClaimValue = newClaim.Value;
+
+                var result = await storageProvider.UpdateAsync(userClaim, cancellationToken);
+
+                if (result.Succeeded)
                 {
-                    userClaim.ClaimType = newClaim.Type;
-                    userClaim.ClaimValue = newClaim.Value;
-
-                    await userClaims.UpdateAsync(userClaim, cancellationToken);
-
                     if (!string.IsNullOrEmpty(user.FlattenClaims))
                     {
                         user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue}", $"{newClaim.Type}|{newClaim.Value}");
@@ -603,13 +713,12 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             foreach (var claim in claims)
             {
-                var userClaimMatches = await userClaims.FindAsync(user.Id, claim, cancellationToken);
-                if (userClaimMatches != null)
+                foreach (var userClaim in await FindClaimsAsync(user.Id, claim, cancellationToken))
                 {
-                    foreach (var userClaim in userClaimMatches)
-                    {
-                        await userClaims.RemoveAsync(userClaim, cancellationToken);
+                    var result = await storageProvider.DeleteAsync(userClaim, cancellationToken);
 
+                    if (result.Succeeded)
+                    {
                         if (!string.IsNullOrEmpty(user.FlattenClaims))
                         {
                             user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue},", string.Empty);
@@ -636,7 +745,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
             
-            await RemoveClaimsAsync(user, await GetClaimsAsync(user, cancellationToken) ?? new List<Claim>(), cancellationToken);
+            await RemoveClaimsAsync(user, await GetClaimsAsync(user, cancellationToken), cancellationToken);
         }
 
         #endregion
@@ -651,8 +760,10 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The claims for the user if any.
         /// </returns>
-        public override Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default)
+        public async override Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default)
         {
+            IList<Claim> claims = new List<Claim>();
+
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
@@ -661,15 +772,38 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return userClaims.GetClaimsAsync(user.Id, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUserClaim>()
+                    .Where(userClaim => userClaim.UserId == user.Id)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    foreach (var userClaim in await feedIterator.ReadNextAsync())
+                    {
+                        claims.Add(userClaim.ToClaim());
+                    }
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return claims;
         }
 
         #endregion
 
-        #region Get Users With Claim
+        #region Get Claim Users
 
-        public override Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default)
+        public async override Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default)
         {
+            IList<TUser> users = new List<TUser>();
+
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
@@ -678,7 +812,75 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            return userClaims.GetUsersAsync<TUser>(claim, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUser>()
+                    .Where(user => !string.IsNullOrEmpty(user.FlattenClaims) && user.FlattenClaims.Contains($"{claim.Type}|{claim.Value}"))
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    foreach (var user in await feedIterator.ReadNextAsync())
+                    {
+                        users.Add(user);
+                    }
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return users;
+        }
+
+        #endregion
+
+        #region Find UserClaims
+
+        /// <summary>
+        ///     Retrieves the user claims matching the given <paramref name="claim"/> for the user with the given <paramref name="userId"/> from the store.
+        /// </summary>
+        /// <param name="userId">The id of the user to get claims for.</param>
+        /// <param name="claim">The claim to match.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        ///     The matching user claims if any.
+        /// </returns>
+        public async Task<IList<TUserClaim>> FindClaimsAsync(string userId, Claim claim, CancellationToken cancellationToken)
+        {
+            IList<TUserClaim> userClaims = new List<TUserClaim>();
+
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TUserClaim>()
+                        .Where(userClaim => userClaim.UserId == userId && userClaim.ClaimType == claim.Type && userClaim.ClaimValue == claim.Value)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        foreach (var userClaim in await feedIterator.ReadNextAsync())
+                        {
+                            userClaims.Add(userClaim);
+                        }
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return userClaims;
         }
 
         #endregion
@@ -710,7 +912,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(login));
             }
 
-            return userLogins.AddAsync(CreateUserLogin(user, login), cancellationToken);
+            return storageProvider.CreateAsync(CreateUserLogin(user, login), cancellationToken);
         }
 
         #endregion
@@ -746,7 +948,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             var userLogin = await FindUserLoginAsync(user.Id, loginProvider, providerKey, cancellationToken);
             if (userLogin != null)
             {
-                await userLogins.RemoveAsync(userLogin, cancellationToken);
+                await storageProvider.DeleteAsync(userLogin, cancellationToken);
             }
         }
 
@@ -767,7 +969,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            foreach (var userLoginInfo in await GetLoginsAsync(user, cancellationToken) ?? new List<UserLoginInfo>())
+            foreach (var userLoginInfo in await GetLoginsAsync(user, cancellationToken))
             {
                 await RemoveLoginAsync(user, userLoginInfo.LoginProvider, userLoginInfo.ProviderKey, cancellationToken);
             }
@@ -785,8 +987,10 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         /// The <see cref="Task"/> for the asynchronous operation, containing a list of <see cref="UserLoginInfo"/> for the specified <paramref name="user"/>, if any.
         /// </returns>
-        public override Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default)
+        public async override Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default)
         {
+            IList<UserLoginInfo> userLognins = new List<UserLoginInfo>();
+
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
@@ -795,7 +999,28 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return userLogins.GetLoginsAsync(user.Id, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUserLogin>()
+                    .Where(userLogin => userLogin.UserId == user.Id)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    foreach (var userLogin in await feedIterator.ReadNextAsync())
+                    {
+                        userLognins.Add(new UserLoginInfo(userLogin.LoginProvider, userLogin.ProviderKey, userLogin.ProviderDisplayName));
+                    }
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return userLognins;
         }
 
         #endregion
@@ -809,7 +1034,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user login if it exists.</returns>
-        protected override Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken = default)
+        protected async override Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -823,7 +1048,26 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentException($"{nameof(providerKey)} cannot be null or empty.");
             }
 
-            return userLogins.FindAsync(loginProvider, providerKey, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUserLogin>()
+                    .Where(userLogin => userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    // Should only be one, so...
+                    return (await feedIterator.ReadNextAsync()).First();
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return null;
         }
 
 
@@ -835,7 +1079,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user login if it exists.</returns>
-        protected override Task<TUserLogin> FindUserLoginAsync(string userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default)
+        protected async override Task<TUserLogin> FindUserLoginAsync(string userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -853,7 +1097,26 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentException($"{nameof(providerKey)} cannot be null or empty.");
             }
 
-            return userLogins.FindAsync(userId, loginProvider, providerKey, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUserLogin>()
+                    .Where(userLogin => userLogin.UserId == userId && userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    // Should only be one, so...
+                    return (await feedIterator.ReadNextAsync()).First();
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return null;
         }
 
         #endregion
@@ -880,7 +1143,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return userTokens.AddAsync(token);
+            return storageProvider.CreateAsync(token);
         }
 
         #endregion
@@ -903,7 +1166,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return userTokens.RemoveAsync(token);
+            return storageProvider.DeleteAsync(token);
         }
 
 
@@ -924,10 +1187,54 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(user));
             }
 
-            foreach (var token in await userTokens.GetTokensAsync(user.Id, cancellationToken) ?? new List<TUserToken>())
+            foreach (var userToken in await GetTokensAsync(user.Id, cancellationToken))
             {
-                await userTokens.RemoveAsync(token);
+                await storageProvider.DeleteAsync(userToken, cancellationToken);
             }
+        }
+
+        #endregion
+
+        #region Get UserTokens
+
+        /// <summary>
+        ///     Retrieves user tokens from store if any.
+        /// </summary>
+        /// <param name="userId">The token owner's id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The user token if it exists.</returns>
+        public async Task<IList<TUserToken>> GetTokensAsync(string userId, CancellationToken cancellationToken)
+        {
+            IList<TUserToken> userTokens = new List<TUserToken>();
+
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TUserToken>()
+                        .Where(userToken => userToken.UserId == userId)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        foreach (var userToken in await feedIterator.ReadNextAsync())
+                        {
+                            userTokens.Add(userToken);
+                        }
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return userTokens;
         }
 
         #endregion
@@ -942,7 +1249,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user token if it exists.</returns>
-        protected override Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken = default)
+        protected async override Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -960,7 +1267,26 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
             }
 
-            return userTokens.FindAsync(user.Id, loginProvider, name, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TUserToken>()
+                    .Where(userToken => userToken.UserId == user.Id && userToken.LoginProvider == loginProvider && userToken.Name == name)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    // Should only be one, so...
+                    return (await feedIterator.ReadNextAsync()).First();
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return null;
         }
 
         #endregion

@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,33 +27,27 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     {
         #region Setup
 
-        private readonly IRoles<TRole> roles;
-        private readonly IRoleClaims<TRoleClaim> roleClaims;
+        private readonly ICosmosIdentityStorageProvider storageProvider;
 
         /// <summary>
         ///     Constructs a new instance of <see cref="RoleStore{TRole, TUserRole, TRoleClaim}"/>.
         /// </summary>
-        /// <param name="roles">The context used to access the role store.</param>
-        /// <param name="roleClaims">The context used to access the role claim store.</param>
+        /// <param name="storageProvider">The provider used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(
-            IRoles<TRole> roles,
-            IRoleClaims<TRoleClaim> roleClaims,
-            IdentityErrorDescriber describer = null) : base(describer ?? new IdentityErrorDescriber())
+        public RoleStore(ICosmosIdentityStorageProvider storageProvider, IdentityErrorDescriber describer = null)
+            : base(describer ?? new IdentityErrorDescriber())
         {
-            this.roles = roles ?? throw new ArgumentNullException(nameof(roles));
-            this.roleClaims = roleClaims ?? throw new ArgumentNullException(nameof(roleClaims));
+            this.storageProvider = storageProvider ?? throw new ArgumentNullException(nameof(storageProvider));
         }
 
         #endregion
 
         #region Role Store
 
-        #region Roles
-
-        public override IQueryable<TRole> Roles => roles.Queryable;
-
-        #endregion
+        /// <summary>
+        ///     A navigation property for the roles the store contains.
+        /// </summary>
+        public override IQueryable<TRole> Roles => storageProvider.Queryable<TRole>();
 
         #region Create Role
 
@@ -73,7 +69,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return roles.CreateAsync(role, cancellationToken);
+            return storageProvider.CreateAsync(role, cancellationToken);
         }
 
         #endregion
@@ -100,7 +96,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-            return roles.UpdateAsync(role, cancellationToken);
+            return storageProvider.UpdateAsync(role, cancellationToken);
         }
 
         #endregion
@@ -125,7 +121,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var result = await roles.DeleteAsync(role, cancellationToken);
+            var result = await storageProvider.DeleteAsync(role, cancellationToken);
             if (result.Succeeded)
             {
                 await RemoveClaimsAsync(role, cancellationToken);
@@ -151,7 +147,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return roles.FindByIdAsync(roleId, cancellationToken);
+            return storageProvider.FindByIdAsync<TRole>(roleId, cancellationToken);
         }
 
 
@@ -163,12 +159,34 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the role matching the specified <paramref name="normalizedName"/> if it exists.
         /// </returns>
-        public override Task<TRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = default)
+        public async override Task<TRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return roles.FindByNameAsync(normalizedName, cancellationToken); ;
+            if (!string.IsNullOrEmpty(normalizedName))
+            {
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TRole>()
+                        .Where(role => role.NormalizedName == normalizedName)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        // Should only be one, so...
+                        return (await feedIterator.ReadNextAsync()).First();
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return null;
         }
 
         #endregion
@@ -200,7 +218,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            return roleClaims.AddAsync(CreateRoleClaim(role, claim), cancellationToken);
+            return storageProvider.CreateAsync(CreateRoleClaim(role, claim), cancellationToken);
         }
 
         #endregion
@@ -228,13 +246,9 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            var roleClaimMatches = await roleClaims.FindAsync(role.Id, claim, cancellationToken);
-            if (roleClaimMatches != null)
+            foreach (var roleClaim in await FindClaimsAsync(role.Id, claim, cancellationToken))
             {
-                foreach (var roleClaim in roleClaimMatches)
-                {
-                    await roleClaims.RemoveAsync(roleClaim, cancellationToken);
-                }
+                await storageProvider.DeleteAsync(roleClaim, cancellationToken);
             }
         }
 
@@ -255,7 +269,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(role));
             }
 
-            foreach (var claim in await GetClaimsAsync(role, cancellationToken) ?? new List<Claim>())
+            foreach (var claim in await GetClaimsAsync(role, cancellationToken))
             {
                 await RemoveClaimAsync(role, claim, cancellationToken);
             }
@@ -271,8 +285,10 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="role">The role whose claims should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the claims granted to a role.</returns>
-        public override Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default)
+        public async override Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default)
         {
+            IList<Claim> claims = new List<Claim>();
+
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
@@ -281,7 +297,75 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return roleClaims.GetClaimsAsync(role.Id, cancellationToken);
+            try
+            {
+                // LINQ query generation
+                var feedIterator = storageProvider.Queryable<TRoleClaim>()
+                    .Where(roleClaim => roleClaim.RoleId == role.Id)
+                    .ToFeedIterator();
+
+                //Asynchronous query execution
+                while (feedIterator.HasMoreResults)
+                {
+                    foreach (var roleClaim in await feedIterator.ReadNextAsync())
+                    {
+                        claims.Add(roleClaim.ToClaim());
+                    }
+                }
+            }
+            catch (CosmosException)
+            {
+
+            }
+
+            return claims;
+        }
+
+        #endregion
+
+        #region Find RoleClaims
+
+        /// <summary>
+        ///     Retrieves the role claims matching the given <paramref name="claim"/> for the role with the given <paramref name="roleId"/> from the store.
+        /// </summary>
+        /// <param name="roleId">The id of the role to get claims for.</param>
+        /// <param name="claim">The claim to match.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        ///     The matching role claims if any.
+        /// </returns>
+        public async Task<IList<TRoleClaim>> FindClaimsAsync(string roleId, Claim claim, CancellationToken cancellationToken)
+        {
+            IList<TRoleClaim> roleClaims = new List<TRoleClaim>();
+
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (!string.IsNullOrEmpty(roleId))
+            {
+                try
+                {
+                    // LINQ query generation
+                    var feedIterator = storageProvider.Queryable<TRoleClaim>()
+                        .Where(roleClaim => roleClaim.RoleId == roleId && roleClaim.ClaimType == claim.Type && roleClaim.ClaimValue == claim.Value)
+                        .ToFeedIterator();
+
+                    //Asynchronous query execution
+                    while (feedIterator.HasMoreResults)
+                    {
+                        foreach (var roleClaim in await feedIterator.ReadNextAsync())
+                        {
+                            roleClaims.Add(roleClaim);
+                        }
+                    }
+                }
+                catch (CosmosException)
+                {
+
+                }
+            }
+
+            return roleClaims;
         }
 
         #endregion

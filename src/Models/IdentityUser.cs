@@ -6,7 +6,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// <summary>
     ///     The Cosmos required implementation of an identity user which uses a string as a primary key.
     /// </summary>
-    public class IdentityUser : Microsoft.AspNetCore.Identity.IdentityUser
+    public class IdentityUser : Microsoft.AspNetCore.Identity.IdentityUser, ICosmosIdentity
     {
         private string id;
 

@@ -6,9 +6,9 @@ using System;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents an authentication token for a user.
+    ///     Represents the link between a user and a role.
     /// </summary>
-    public class IdentityUserToken : Microsoft.AspNetCore.Identity.IdentityUserToken<string>
+    public class IdentityUserRole : Microsoft.AspNetCore.Identity.IdentityUserRole<string>, ICosmosIdentity
     {
         private string id;
 
