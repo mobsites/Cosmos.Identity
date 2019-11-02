@@ -21,13 +21,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     {
         #region Setup
 
-        private readonly ICosmos cosmos;
+        private readonly ICosmosIdentityContainer cosmos;
 
         /// <summary>
         ///     Constructs a new instance of <see cref="Users{TUser}"/>.
         /// </summary>
         /// <param name="cosmos">The context in which to access the Cosmos Container for the identity store.</param>
-        public Users(ICosmos cosmos)
+        public Users(ICosmosIdentityContainer cosmos)
         {
             this.cosmos = cosmos ?? throw new ArgumentNullException(nameof(cosmos));
         }
