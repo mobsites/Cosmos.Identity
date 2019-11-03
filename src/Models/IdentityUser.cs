@@ -20,7 +20,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             get => id;
             set
             {
-                id = value ?? base.Id;
+                id = string.IsNullOrEmpty(value) ? base.Id : value;
             }
         }
 
@@ -28,9 +28,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         ///     Override this to provide a value for the partition key parameter in the Cosmos container method calls.
         ///     NOTE: The derived class must also include a property that matches the partition key path that was used when creating the container.
         /// </summary>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public virtual string PartitionKey => null;
+        public virtual string PartitionKey => nameof(IdentityUser);
 
 
         /// <summary>

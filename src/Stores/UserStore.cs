@@ -41,7 +41,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <summary>
         ///     Constructs a new instance of <see cref="UserStore{TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim}"/>.
         /// </summary>
-        /// /// <param name="storageProvider">The provider used to access the store.</param>
+        /// <param name="storageProvider">The provider used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
         public UserStore(ICosmosIdentityStorageProvider storageProvider, IdentityErrorDescriber describer = null) 
             : base(describer ?? new IdentityErrorDescriber())
@@ -208,7 +208,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     while (feedIterator.HasMoreResults)
                     {
                         // Should only be one, so...
-                        return (await feedIterator.ReadNextAsync()).First();
+                        return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                     }
                 }
                 catch (CosmosException)
@@ -247,7 +247,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     while (feedIterator.HasMoreResults)
                     {
                         // Should only be one, so...
-                        return (await feedIterator.ReadNextAsync()).First();
+                        return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                     }
                 }
                 catch (CosmosException)
@@ -293,7 +293,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     while (feedIterator.HasMoreResults)
                     {
                         // Should only be one, so...
-                        return (await feedIterator.ReadNextAsync()).First();
+                        return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                     }
                 }
                 catch (CosmosException)
@@ -535,7 +535,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 while (feedIterator.HasMoreResults)
                 {
                     // Should only be one, so...
-                    return (await feedIterator.ReadNextAsync()).First();
+                    return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                 }
             }
             catch (CosmosException)
@@ -577,7 +577,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     // LINQ query generation
                     var feedIterator = storageProvider.Queryable<TUser>()
-                        .Where(user => !string.IsNullOrEmpty(user.FlattenRoleIds) && user.FlattenRoleIds.Contains(role.Id))
+                        .Where(user => user.FlattenRoleIds.Contains(role.Id))
                         .ToFeedIterator();
 
                     //Asynchronous query execution
@@ -671,6 +671,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             foreach (var userClaim in await FindClaimsAsync(user.Id, claim, cancellationToken))
             {
+                var oldClaim = userClaim;
+
                 userClaim.ClaimType = newClaim.Type;
                 userClaim.ClaimValue = newClaim.Value;
 
@@ -680,7 +682,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     if (!string.IsNullOrEmpty(user.FlattenClaims))
                     {
-                        user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue}", $"{newClaim.Type}|{newClaim.Value}");
+                        user.FlattenClaims.Replace($"{oldClaim.ClaimType}|{oldClaim.ClaimValue}", $"{newClaim.Type}|{newClaim.Value}");
                     }
                 }
             }
@@ -816,7 +818,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             {
                 // LINQ query generation
                 var feedIterator = storageProvider.Queryable<TUser>()
-                    .Where(user => !string.IsNullOrEmpty(user.FlattenClaims) && user.FlattenClaims.Contains($"{claim.Type}|{claim.Value}"))
+                    .Where(user => user.FlattenClaims.Contains($"{claim.Type}|{claim.Value}"))
                     .ToFeedIterator();
 
                 //Asynchronous query execution
@@ -1059,7 +1061,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 while (feedIterator.HasMoreResults)
                 {
                     // Should only be one, so...
-                    return (await feedIterator.ReadNextAsync()).First();
+                    return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                 }
             }
             catch (CosmosException)
@@ -1108,7 +1110,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 while (feedIterator.HasMoreResults)
                 {
                     // Should only be one, so...
-                    return (await feedIterator.ReadNextAsync()).First();
+                    return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                 }
             }
             catch (CosmosException)
@@ -1278,7 +1280,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 while (feedIterator.HasMoreResults)
                 {
                     // Should only be one, so...
-                    return (await feedIterator.ReadNextAsync()).First();
+                    return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                 }
             }
             catch (CosmosException)

@@ -177,7 +177,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     while (feedIterator.HasMoreResults)
                     {
                         // Should only be one, so...
-                        return (await feedIterator.ReadNextAsync()).First();
+                        return (await feedIterator.ReadNextAsync()).FirstOrDefault();
                     }
                 }
                 catch (CosmosException)
@@ -334,7 +334,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>
         ///     The matching role claims if any.
         /// </returns>
-        public async Task<IList<TRoleClaim>> FindClaimsAsync(string roleId, Claim claim, CancellationToken cancellationToken)
+        protected async Task<IList<TRoleClaim>> FindClaimsAsync(string roleId, Claim claim, CancellationToken cancellationToken)
         {
             IList<TRoleClaim> roleClaims = new List<TRoleClaim>();
 
