@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mobsites.AspNetCore.Identity.Cosmos;
 using Cosmos.Identity.Default.Razor.Sample.Services;
+using System;
 
 namespace Cosmos.Identity.Default.Razor.Sample
 {
@@ -23,7 +24,27 @@ namespace Cosmos.Identity.Default.Razor.Sample
         {
             // Add default Cosmos Identity Implementation.
             services
-                .AddCosmosIdentity()
+                .AddCosmosIdentity(options =>
+                {
+                    // User settings
+                    options.User.RequireUniqueEmail = true;
+
+                    // Sign In settings
+                    options.SignIn.RequireConfirmedEmail = true;
+
+                    // Password settings
+                    options.Password.RequireDigit = true;
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = true;
+
+                    // Lockout settings
+                    options.Lockout.AllowedForNewUsers = true;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+
+                })
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
