@@ -15,7 +15,7 @@
     <PackageReleaseNotes>Necessary fixes/adjustments to the primary key implementation of the required Cosmos identity models.</PackageReleaseNotes>
     <PackageVersion>1.0.1-beta</PackageVersion>
     <PackageTags>aspnetcore;identity;membership;cosmos;storage provider</PackageTags>
-    <PackageProjectUrl>https://mobsites.com</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</RepositoryUrl>
     <RootNamespace>Mobsites.AspNetCore.Identity.Cosmos</RootNamespace>
