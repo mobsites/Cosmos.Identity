@@ -40,8 +40,8 @@ namespace Cosmos.Identity.Default.Razor.Sample.Services
 
             Database database = cosmosClient.CreateDatabaseIfNotExistsAsync(configuration["DatabaseId"]).Result;
 
-            // Delete the existing container to prevent create identity model conflicts in sample.
-            // Only for sample purposes, obviously.
+            // Delete the existing container to prevent create conflicts in sample.
+            // For sample purposes only, obviously.
             using (database.GetContainer(configuration["ContainerId"]).DeleteContainerStreamAsync().Result) { }
 
             IdentityContainer = database.CreateContainerIfNotExistsAsync(configuration["ContainerId"], "/PartitionKey").Result;

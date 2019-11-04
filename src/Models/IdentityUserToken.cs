@@ -6,25 +6,28 @@ using System;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     Represents an authentication token for a user.
+    ///     The required Cosmos implementation of an identity user token which uses a string as a primary key.
     /// </summary>
     public class IdentityUserToken : Microsoft.AspNetCore.Identity.IdentityUserToken<string>, ICosmosIdentity
     {
-        private string id;
+        /// <summary>
+        /// Initializes a new instance of <see cref="IdentityUserToken"/>.
+        /// </summary>
+        /// <remarks>
+        /// The Id property is initialized to form a new GUID string value.
+        /// </remarks>
+        public IdentityUserToken()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
 
         /// <summary>
         ///     Cosmos requires a string property named "id" as a primary key. 
+        ///     The base class does not provide one to override or hide.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public string Id
-        {
-            get => id;
-            set
-            {
-                id = string.IsNullOrEmpty(value) ? Guid.NewGuid().ToString() : value;
-            }
-        }
+        public string Id { get; set; }
 
         /// <summary>
         ///     Override this to provide a value for the partition key parameter in the Cosmos container method calls.

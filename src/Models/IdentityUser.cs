@@ -4,25 +4,16 @@
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     The Cosmos required implementation of an identity user which uses a string as a primary key.
+    ///     The required Cosmos implementation of an identity user which uses a string as a primary key.
     /// </summary>
     public class IdentityUser : Microsoft.AspNetCore.Identity.IdentityUser, ICosmosIdentity
     {
-        private string id;
-
         /// <summary>
         ///     Override base class property so that it can be serialized correctly as primary key "id" for Cosmos.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public override string Id
-        {
-            get => id;
-            set
-            {
-                id = string.IsNullOrEmpty(value) ? base.Id : value;
-            }
-        }
+        public override string Id { get; set; }
 
         /// <summary>
         ///     Override this to provide a value for the partition key parameter in the Cosmos container method calls.
