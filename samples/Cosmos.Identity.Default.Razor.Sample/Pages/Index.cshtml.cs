@@ -19,7 +19,7 @@ namespace Cosmos.Identity.Default.Razor.Sample.Pages
 
         public void OnGet()
         {
-
+            ViewData["Title"] = "Cosmos Identity";
         }
     }
 }

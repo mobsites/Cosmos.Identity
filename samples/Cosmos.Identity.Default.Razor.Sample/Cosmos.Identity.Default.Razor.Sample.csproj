@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -8,11 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\AspNetCore.Identity.Cosmos.csproj" />
+    <PackageReference Include="Mobsites.AspNetCore.Identity.Cosmos" Version="1.0.0-beta" />
   </ItemGroup>
 
 </Project>

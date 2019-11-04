@@ -12,7 +12,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>mobsites-logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Uses Microsoft.Azure.Cosmos v3.3.2.</PackageReleaseNotes>
+    <PackageReleaseNotes>A pre-release for testing and samples.</PackageReleaseNotes>
+    <PackageVersion>1.0.0-beta</PackageVersion>
     <PackageTags>aspnetcore;identity;membership;cosmos;storage provider</PackageTags>
     <PackageProjectUrl>https://mobsites.com</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
