@@ -12,7 +12,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>mobsites-logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>A pre-release for testing and samples.</PackageReleaseNotes>
+    <PackageReleaseNotes>Necessary fixes/adjustments to the primary key implementation of the required Cosmos identity models.</PackageReleaseNotes>
     <PackageVersion>1.0.1-beta</PackageVersion>
     <PackageTags>aspnetcore;identity;membership;cosmos;storage provider</PackageTags>
     <PackageProjectUrl>https://mobsites.com</PackageProjectUrl>
