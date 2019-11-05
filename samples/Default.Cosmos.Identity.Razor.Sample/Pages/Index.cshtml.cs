@@ -6,19 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace Cosmos.Identity.Default.Razor.Sample.Pages
+namespace Default.Cosmos.Identity.Razor.Sample.Pages
 {
-    public class PrivacyModel : PageModel
+    public class IndexModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> _logger;
+        private readonly ILogger<IndexModel> _logger;
 
-        public PrivacyModel(ILogger<PrivacyModel> logger)
+        public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
         }
 
         public void OnGet()
         {
+            ViewData["Title"] = "Home page";
         }
     }
 }

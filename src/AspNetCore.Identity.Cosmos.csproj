@@ -12,8 +12,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>mobsites-logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Necessary fixes/adjustments to the primary key implementation of the required Cosmos identity models.</PackageReleaseNotes>
-    <PackageVersion>1.0.1-beta</PackageVersion>
+    <PackageReleaseNotes>Added support for default Cosmos identity container, and auto-services-add of custom Cosmos identity container.</PackageReleaseNotes>
+    <PackageVersion>1.0.2-beta</PackageVersion>
     <PackageTags>aspnetcore;identity;membership;cosmos;storage provider</PackageTags>
     <PackageProjectUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>

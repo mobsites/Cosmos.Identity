@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -5,10 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mobsites.AspNetCore.Identity.Cosmos;
-using Cosmos.Identity.Default.Razor.Sample.Services;
-using System;
+using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
-namespace Cosmos.Identity.Default.Razor.Sample
+namespace Default.Cosmos.Identity.Razor.Sample
 {
     public class Startup
     {
@@ -29,9 +29,6 @@ namespace Cosmos.Identity.Default.Razor.Sample
                     // User settings
                     options.User.RequireUniqueEmail = true;
 
-                    // Sign In settings
-                    options.SignIn.RequireConfirmedEmail = true;
-
                     // Password settings
                     options.Password.RequireDigit = true;
                     options.Password.RequiredLength = 8;
@@ -48,17 +45,13 @@ namespace Cosmos.Identity.Default.Razor.Sample
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            // Add ICosmosIdentityContainer
-            services
-                .AddSingleton<ICosmosIdentityContainer, CosmosDb>();
-
             // Add Razor
             services
                 .AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -83,6 +76,29 @@ namespace Cosmos.Identity.Default.Razor.Sample
             {
                 endpoints.MapRazorPages();
             });
+
+            // Add three roles.
+            if (!roleManager.RoleExistsAsync("Admin").Result)
+            {
+                roleManager.CreateAsync(new IdentityRole
+                {
+                    Name = "Admin"
+                });
+            }
+            if (!roleManager.RoleExistsAsync("Employee").Result)
+            {
+                roleManager.CreateAsync(new IdentityRole
+                {
+                    Name = "Employee"
+                });
+            }
+            if (!roleManager.RoleExistsAsync("Customer").Result)
+            {
+                roleManager.CreateAsync(new IdentityRole
+                {
+                    Name = "Customer"
+                });
+            }
         }
     }
 }

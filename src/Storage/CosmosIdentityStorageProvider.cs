@@ -41,10 +41,12 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         {
             var partitionKey = new TIdentity().PartitionKey;
 
-            return container.GetItemLinqQueryable<TIdentity>(requestOptions: new QueryRequestOptions
-            {
-                PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
-            });
+            return container.GetItemLinqQueryable<TIdentity>(
+                allowSynchronousQueryExecution:true,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
+                });
         }
 
         #endregion

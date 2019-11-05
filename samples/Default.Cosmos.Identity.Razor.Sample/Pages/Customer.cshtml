@@ -1,0 +1,10 @@
+﻿@page
+@model Default.Cosmos.Identity.Razor.Sample.Pages.CustomerModel
+
+<div class="text-center">
+    <h1 class="display-4">Welcome Customer!</h1>
+    @if (User.IsInRole("Admin"))
+    {
+        <h3>As Admin, you have access to all authorized areas.</h3>
+    }
+</div>

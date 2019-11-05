@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace Cosmos.Identity.Default.Razor.Sample.Pages
+namespace Default.Cosmos.Identity.Razor.Sample.Pages
 {
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorModel : PageModel
