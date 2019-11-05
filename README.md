@@ -6,11 +6,11 @@ Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://github
 
 ## Design and Development
 
-The out-of-the-box (and open source) [Entity Framework Core](https://github.com/aspnet/AspNetCore/tree/master/src/Identity/EntityFrameworkCore/src) solution was used as the principal guide in design and development. As such, Cosmos Identity supports the same use cases and features that the default Entity Framework Core solution does. 
+The out-of-the-box (and open source) [Microsoft.AspNetCore.Identity.EntityFrameworkCore](https://github.com/aspnet/AspNetCore/tree/master/src/Identity/EntityFrameworkCore/src) library was used as the principal guide in design and development. As such, Cosmos Identity supports the same use cases and features that the default `Microsoft.AspNetCore.Identity.EntityFrameworkCore` library does. 
 
 Also considered during development were two third party Cosmos-based solutions:
 
-* Bernhard Koenig's [AspNetCore.Identity.DocumentDb](https://github.com/codekoenig/AspNetCore.Identity.DocumentDb), which uses the older Microsoft.Azure.DocumentDB.Core SDK
+* Bernhard Koenig's [AspNetCore.Identity.DocumentDb](https://github.com/codekoenig/AspNetCore.Identity.DocumentDb), which uses the older `Microsoft.Azure.DocumentDB.Core` SDK.
 
 * f14shm4n's [AspNetCore.Identity.DocumentDb](https://github.com/f14shm4n/AspNetCore.Identity.DocumentDb), which uses the newer .Net Standard 2.0 based one.
 
@@ -96,4 +96,22 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 ```
 
-7. Safely remove any dependencies to Identity Entity Framework Core.
+7. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
+
+## Samples
+
+The samples demonstrate both the default implementation of Cosmos Identity and a custom extension of Cosmos Identity using a Razor Pages web app built with the .Net Core 3.0 Web App template with individual account users. `Microsoft.AspNetCore.Identity.EntityFrameworkCore` was then stripped out, leaving only `Microsoft.AspNetCore.Identity`. (Note: If any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.)
+
+### Required to run the samples
+
+As noted above, the samples uses .Net Core 3.0, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire the sample up.
+
+### On first running one of the samples
+
+![Sample Home Page](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/samples/Default.Cosmos.Identity.Razor.Sample/wwwroot/images/sample-home-page-no-users.png)
+
+### Register users
+![Sample Register Page](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/samples/Default.Cosmos.Identity.Razor.Sample/wwwroot/images/sample-register-page.png)
+
+### After Registering Users
+![Sample Home Page With Users](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/samples/Default.Cosmos.Identity.Razor.Sample/wwwroot/images/sample-home-page-with-users.png)
