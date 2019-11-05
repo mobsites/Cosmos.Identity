@@ -83,21 +83,21 @@ namespace Default.Cosmos.Identity.Razor.Sample
                 roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "Admin"
-                });
+                }).Wait();
             }
             if (!roleManager.RoleExistsAsync("Employee").Result)
             {
                 roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "Employee"
-                });
+                }).Wait();
             }
             if (!roleManager.RoleExistsAsync("Customer").Result)
             {
                 roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "Customer"
-                });
+                }).Wait();
             }
         }
     }

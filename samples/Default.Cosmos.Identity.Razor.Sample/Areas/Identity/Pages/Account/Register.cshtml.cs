@@ -88,7 +88,10 @@ namespace Default.Cosmos.Identity.Razor.Sample.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, Input.Role);
+                    if (!string.IsNullOrEmpty(Input.Role))
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
 
                     _logger.LogInformation("User created a new account with password.");
 
@@ -120,6 +123,8 @@ namespace Default.Cosmos.Identity.Razor.Sample.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
+            Roles = _roleManager.Roles.ToList().Select(role => role.Name).ToList();
+
             return Page();
         }
     }

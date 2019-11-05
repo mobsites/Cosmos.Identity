@@ -4,3 +4,126 @@
 <div class="text-center">
     <h1 class="display-4">Welcome to Cosmos Identity</h1>
 </div>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Holy guacamole!</strong> @Model.Message
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<h5 class="mt-4">
+    On startup, three identity roles were created: <span class="text-primary">Admin</span>, <span class="text-primary">Employee</span>, and <span class="text-primary">Customer</span>.
+    Also, notice above three links to pages of the same name. Each contains an [Authorize(roles = "roleName")] attribute (without excluding the Admin role on the latter two).
+</h5>
+
+<div class="text-center mt-4 mb-5">
+    <h3>Give Cosmos Identity a test drive:</h3>
+    <ul class="list-unstyled">
+        <li>1) Use the register page to create users.</li>
+        <li>2) Assign a role or not.</li>
+        <li>3) Log in.</li>
+        <li>4) Try to access the authorized pages.</li>
+    </ul>
+</div>
+
+@if (Model.IsUsers)
+{
+    int rows = 1;
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Role</th>
+                    <th scope="col" class="cell-shrink">Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Admins.Count() > 0)
+                {
+                    foreach (var user in Model.Admins)
+                    {
+
+                        <tr>
+                            <th scope="row">@(rows++)</th>
+                            <th>@user.UserName</th>
+                            <td>Admin</td>
+                            <td class="text-center cell-shrink">
+                                <form method="post">
+                                    <input type="hidden" name="username" value="@user.UserName" />
+                                    <button type="submit"><i class="material-icons">delete</i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                @if (Model.Employees.Count() > 0)
+                {
+                    foreach (var user in Model.Employees)
+                    {
+
+                        <tr>
+                            <th scope="row">@(rows++)</th>
+                            <th>@user.UserName</th>
+                            <td>Employee</td>
+                            <td class="text-center cell-shrink">
+                                <form method="post">
+                                    <input type="hidden" name="username" value="@user.UserName" />
+                                    <button type="submit"><i class="material-icons">delete</i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                @if (Model.Customers.Count() > 0)
+                {
+                    foreach (var user in Model.Customers)
+                    {
+
+                        <tr>
+                            <th scope="row">@(rows++)</th>
+                            <th>@user.UserName</th>
+                            <td>Customer</td>
+                            <td class="text-center cell-shrink">
+                                <form method="post">
+                                    <input type="hidden" name="username" value="@user.UserName" />
+                                    <button type="submit"><i class="material-icons">delete</i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                @if (Model.NonRoleUsers.Count() > 0)
+                {
+                    foreach (var user in Model.NonRoleUsers)
+                    {
+
+                        <tr>
+                            <th scope="row">@(rows++)</th>
+                            <th>@user.UserName</th>
+                            <td>None</td>
+                            <td class="text-center cell-shrink">
+                                <form method="post">
+                                    <input type="hidden" name="username" value="@user.UserName" />
+                                    <button type="submit"><i class="material-icons">delete</i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <h6 class="mt-5">
+        *** NOTE: Once users are added, a table will appear below with details and the ability to remove a user.
+    </h6>
+}

@@ -12,9 +12,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>mobsites-logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Added support for default Cosmos identity container, and auto-services-add of custom Cosmos identity container.</PackageReleaseNotes>
-    <PackageVersion>1.0.2-beta</PackageVersion>
-    <PackageTags>aspnetcore;identity;membership;cosmos;storage provider</PackageTags>
+    <PackageReleaseNotes>Official release with latest Microsoft.Azure.Cosmos sdk v3.4.0.</PackageReleaseNotes>
+    <PackageVersion>1.0.0</PackageVersion>
+    <PackageTags>identity;membership;storage provider;azure;cosmos;cosmosdb;documentdb;nosql;netstandard;dotnetcore;netcore;aspnetcore</PackageTags>
     <PackageProjectUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</RepositoryUrl>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.3.3" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.4.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.0.0" />
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
   </ItemGroup>
