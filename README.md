@@ -52,7 +52,7 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 using Mobsites.AspNetCore.Identity.Cosmos;
 ```
 
-5. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity. Pass in Identity options or not. Add any other `IdentityBuilder` methods desired:
+5. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity. Pass in Identity options or not. Add any other default `IdentityBuilder` methods:
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -78,6 +78,7 @@ public void ConfigureServices(IServiceCollection services)
             options.Lockout.MaxFailedAccessAttempts = 5;
 
         })
+        // Add other default IdentityBuilder methods.
         .AddDefaultUI()
         .AddDefaultTokenProviders();
 
