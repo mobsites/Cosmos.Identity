@@ -26,7 +26,7 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 
 2. Add a Cosmos connection string to appsettings.json using the name `CosmosIdentity`:
 
-```json
+```
 {
   "ConnectionStrings": {
     "CosmosIdentity": "{cosmos-connection-string}"
@@ -37,7 +37,7 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 
 3. Add the following key-value pairs to appsettings.json using the ids of the Cosmos database and container for values:
 
-```json
+```
 {
   ...
   "IdentityContainerId": "{containerId}",
