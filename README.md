@@ -100,7 +100,7 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 ## Samples
 
-The samples demonstrate both the default implementation of Cosmos Identity and a custom extension of Cosmos Identity using a Razor Pages web app built with the .Net Core 3.0 Web App template with individual account users. `Microsoft.AspNetCore.Identity.EntityFrameworkCore` was then stripped out, leaving only `Microsoft.AspNetCore.Identity`. (Note: If any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.)
+The samples demonstrate both the default implementation of Cosmos Identity and a custom extension of Cosmos Identity using a Razor Pages web app built with the .Net Core 3.0 Web App template with individual account users. `Microsoft.AspNetCore.Identity.EntityFrameworkCore` was then stripped out, leaving only `Microsoft.AspNetCore.Identity`. (Note: When wiring up your own project, if any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.)
 
 ### Required to run the samples
 
