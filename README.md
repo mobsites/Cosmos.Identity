@@ -26,7 +26,7 @@ Also considered during development were two third party Cosmos-based solutions:
 
 Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below. 
 
-**NOTE: There is one caveat to keep in mind when using the default implementation—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have a partition key path of `/PartitionKey` in order to use the default implementation, else a custom extended Cosmos Identity approach must be used (see further down below for guidance).**
+**NOTE: There is one caveat to keep in mind when using the default implementation—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have a partition key path of `/PartitionKey` in order to use the default implementation, else a custom extended Cosmos Identity approach must be used (see [Extending Cosmos Identity](https://github.com/Mobsites/AspNetCore.Identity.Cosmos#extending-cosmos-identity) for guidance).**
 
 1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
 
