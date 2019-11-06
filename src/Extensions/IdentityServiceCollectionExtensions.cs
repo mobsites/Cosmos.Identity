@@ -97,7 +97,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
-        public static void AddCosmosIdentity<TCosmosIdentityContainer,TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
+        public static IdentityBuilder AddCosmosIdentity<TCosmosIdentityContainer,TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
             where TCosmosIdentityContainer : ICosmosIdentityContainer
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
@@ -110,7 +110,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             services
                 .AddSingleton(typeof(ICosmosIdentityContainer), typeof(TCosmosIdentityContainer));
 
-            services
+            return services
                 .AddIdentity<TUser, TRole>(setupAction)
                 .AddCosmosStores<TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>();
         }

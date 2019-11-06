@@ -23,6 +23,7 @@ namespace Default.Cosmos.Identity.Razor.Sample
         public void ConfigureServices(IServiceCollection services)
         {
             // Add default Cosmos Identity Implementation.
+            // Passing in Identity options are...well, optional.
             services
                 .AddCosmosIdentity(options =>
                 {
@@ -42,6 +43,7 @@ namespace Default.Cosmos.Identity.Razor.Sample
                     options.Lockout.MaxFailedAccessAttempts = 5;
 
                 })
+                // Add other default IdentityBuilder methods.
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
