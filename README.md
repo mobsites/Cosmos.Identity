@@ -1,8 +1,14 @@
 # Cosmos Identity
 
-Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://github.com/aspnet/AspNetCore/tree/master/src/Identity) that uses [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/) as its data store. 
+Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://github.com/aspnet/AspNetCore/tree/master/src/Identity) that uses [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/) as its data store. In step with Azure Cosmos, which has moved away from non-partitioned containers, this library supports partitioned containers only.
 
-**NOTE: This library uses the .Net Standard 2.0 [Azure Cosmos SDK v3](https://github.com/Azure/azure-cosmos-dotnet-v3).**
+## Dependencies
+
+###### .NETStandard 2.0
+* Microsoft.AspNetCore.Identity (>= 2.2.0)
+* Microsoft.Azure.Cosmos (>= 3.4.0)
+* Microsoft.Extensions.Identity.Stores (>= 3.0.0)
+* System.Text.Json (>= 4.6.0)
 
 ## Design and Development
 
@@ -16,7 +22,9 @@ Also considered during development were two third party Cosmos-based solutions:
 
 ## Getting Started
 
-Using the default implementation of Cosmos Identity is fairly straightforward:
+Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below. 
+
+**NOTE: There is one caveat to keep in mind when using the default implementation—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have a partition key path of `/PartitionKey` in order to use the default implementation, else a custom extended Cosmos Identity approach must be used (see further down below for guidance).**
 
 1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos)
 
@@ -104,7 +112,7 @@ The samples demonstrate both the default implementation of Cosmos Identity and a
 
 ### Required to run the samples
 
-As noted above, the samples uses .Net Core 3.0, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire the sample up.
+As noted above, the samples use .Net Core 3.0, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up the sample.
 
 ### On first running one of the samples
 
