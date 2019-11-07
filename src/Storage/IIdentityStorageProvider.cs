@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     The interface to the Cosmos identity storage provider.
+    ///     The interface that Cosmos Identity expects the Cosmos storage provider to implement.
     /// </summary>
-    public interface ICosmosIdentityStorageProvider
+    public interface IIdentityStorageProvider
     {
         /// <summary>
-        ///     Returns a queryable linq expression of the specified <typeparam name="TIdentity"/>.
+        ///     Returns a queryable linq expression of the specified <typeparamref name="TIdentity" />.
         /// </summary>
         IOrderedQueryable<TIdentity> Queryable<TIdentity>()
-            where TIdentity : ICosmosIdentity, new();
+            where TIdentity : ICosmosStorageType, new();
 
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the creation operation.
         /// </returns>
         Task<IdentityResult> CreateAsync<TIdentity>(TIdentity identityModel, CancellationToken cancellationToken = default)
-            where TIdentity : ICosmosIdentity, new();
+            where TIdentity : ICosmosStorageType, new();
 
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.
         /// </returns>
         Task<IdentityResult> UpdateAsync<TIdentity>(TIdentity identityModel, CancellationToken cancellationToken = default)
-            where TIdentity : ICosmosIdentity, new();
+            where TIdentity : ICosmosStorageType, new();
 
 
         /// <summary>
@@ -50,21 +50,22 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <param name="identityModel">The identity model to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
-        ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.
+        ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the delete operation.
         /// </returns>
         Task<IdentityResult> DeleteAsync<TIdentity>(TIdentity identityModel, CancellationToken cancellationToken = default)
-            where TIdentity : ICosmosIdentity, new();
+            where TIdentity : ICosmosStorageType, new();
 
 
         /// <summary>
-        ///     Finds and returns an identity model, if any, who has the specified <paramref name="id"/>.
+        ///     Finds and returns the specified <typeparamref name="TIdentity" />, if any, which has the specified <paramref name="id"/>.
         /// </summary>
-        /// <param name="id">The id of the identity model to search for.</param>
+        /// <typeparam name="TIdentity">The identity type to find.</typeparam>
+        /// <param name="id">The id of the identity type to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
-        ///     The <see cref="Task"/> that represents the asynchronous operation, containing the identity model with the specified <paramref name="id"/> if it exists.
+        ///     The <see cref="Task"/> that represents the asynchronous operation, containing the <typeparamref name="TIdentity" /> with the specified <paramref name="id"/> if it exists.
         /// </returns>
         Task<TIdentity> FindByIdAsync<TIdentity>(string id, CancellationToken cancellationToken = default)
-            where TIdentity : ICosmosIdentity, new();
+            where TIdentity : ICosmosStorageType, new();
     }
 }

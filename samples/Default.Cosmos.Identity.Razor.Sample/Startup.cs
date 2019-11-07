@@ -25,6 +25,7 @@ namespace Default.Cosmos.Identity.Razor.Sample
             // Add default Cosmos Identity Implementation.
             // Passing in Identity options are...well, optional.
             services
+                //.AddCosmosIdentity()
                 .AddCosmosIdentity(options =>
                 {
                     // User settings

@@ -25,7 +25,7 @@ namespace Extended.Cosmos.Identity.Razor.Sample
             // Add Cosmos Identity Implementation with custom identity container and extended identity models.
             // Passing in Identity options are...well, optional.
             services
-                .AddCosmosIdentity<CustomCosmosIdentityContainer, ApplicationUser, ApplicationRole, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>(options =>
+                .AddCosmosIdentity<CustomCosmosStorageProvider, ApplicationUser, ApplicationRole, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>(options =>
                 {
                     // User settings
                     options.User.RequireUniqueEmail = true;

@@ -16,6 +16,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// <summary>
     ///     Represents a new instance of a persistence store for the specified types.
     /// </summary>
+    /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
     /// <typeparam name="TUser">The type representing a user.</typeparam>
     /// <typeparam name="TRole">The type representing a role.</typeparam>
     /// <typeparam name="TUserClaim">The type representing a user claim.</typeparam>
@@ -23,9 +24,10 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
     /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
     /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
-    public class UserStore<TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim> :
+    public class UserStore<TCustomStorageProvider, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim> :
         UserStoreBase<TUser, TRole, string, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>,
         IProtectedUserStore<TUser>
+        where TCustomStorageProvider : IIdentityStorageProvider
         where TUser : IdentityUser, new()
         where TRole : IdentityRole, new()
         where TUserClaim : IdentityUserClaim, new()
@@ -36,14 +38,14 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     {
         #region Setup
 
-        private readonly ICosmosIdentityStorageProvider storageProvider;
+        private readonly TCustomStorageProvider storageProvider;
 
         /// <summary>
-        ///     Constructs a new instance of <see cref="UserStore{TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim}"/>.
+        ///     Constructs a new instance of <see cref="UserStore{TCustomStorageProvider, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim}"/>.
         /// </summary>
         /// <param name="storageProvider">The provider used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(ICosmosIdentityStorageProvider storageProvider, IdentityErrorDescriber describer = null) 
+        public UserStore(TCustomStorageProvider storageProvider, IdentityErrorDescriber describer = null) 
             : base(describer ?? new IdentityErrorDescriber())
         {
             this.storageProvider = storageProvider ?? throw new ArgumentNullException(nameof(storageProvider));
