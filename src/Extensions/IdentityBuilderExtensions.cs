@@ -19,18 +19,29 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
         public static IdentityBuilder AddCosmosStores(this IdentityBuilder builder)
         {
-            if (!typeof(IdentityUser).IsAssignableFrom(builder.UserType))
+            Type userType = builder.UserType;
+            Type roleType = builder.RoleType;
+
+            if (userType is null)
             {
-                throw new InvalidOperationException($"{builder.UserType.Name} must extend {typeof(IdentityUser).FullName}.");
+                throw new InvalidOperationException($"Must provide an identity user of type {typeof(IdentityUser).FullName} or one that extends this type.");
             }
-            if (!typeof(IdentityRole).IsAssignableFrom(builder.RoleType))
+            else if (!typeof(IdentityUser).IsAssignableFrom(userType))
             {
-                throw new InvalidOperationException($"{builder.RoleType.Name} must extend {typeof(IdentityRole).FullName}.");
+                throw new InvalidOperationException($"{userType.Name} must extend {typeof(IdentityUser).FullName}.");
+            }
+            if (roleType is null)
+            {
+                roleType = typeof(IdentityRole);
+            }
+            else if (!typeof(IdentityRole).IsAssignableFrom(roleType))
+            {
+                throw new InvalidOperationException($"{roleType.Name} must extend {typeof(IdentityRole).FullName}.");
             }
 
             Type userStoreType = typeof(UserStore<,,,,,,>).MakeGenericType(
-                builder.UserType,
-                builder.RoleType,
+                userType,
+                roleType,
                 typeof(IdentityUserClaim),
                 typeof(IdentityUserRole),
                 typeof(IdentityUserLogin),
@@ -38,13 +49,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 typeof(IdentityRoleClaim));
 
             Type roleStoreType = typeof(RoleStore<,,>).MakeGenericType(
-                builder.RoleType,
+                roleType,
                 typeof(IdentityUserRole),
                 typeof(IdentityRoleClaim));
 
             builder.Services.TryAddScoped<ICosmosIdentityStorageProvider, CosmosIdentityStorageProvider>();
-            builder.Services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(builder.UserType), userStoreType);
-            builder.Services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(builder.RoleType), roleStoreType);
+            builder.Services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
+            builder.Services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(roleType), roleStoreType);
 
             return builder;
         }
@@ -66,9 +77,24 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             where TUserToken : IdentityUserToken, new()
             where TRoleClaim : IdentityRoleClaim, new()
         {
-            if (!typeof(IdentityUser).IsAssignableFrom(builder.UserType))
+            Type userType = builder.UserType;
+            Type roleType = builder.RoleType;
+
+            if (userType is null)
             {
-                throw new InvalidOperationException($"{builder.UserType.Name} must extend {typeof(IdentityUser).FullName}.");
+                throw new InvalidOperationException($"Must provide an identity user of type {typeof(IdentityUser).FullName} or one that extends this type.");
+            }
+            else if (!typeof(IdentityUser).IsAssignableFrom(userType))
+            {
+                throw new InvalidOperationException($"{userType.Name} must extend {typeof(IdentityUser).FullName}.");
+            }
+            if (roleType is null)
+            {
+                roleType = typeof(IdentityRole);
+            }
+            else if (!typeof(IdentityRole).IsAssignableFrom(roleType))
+            {
+                throw new InvalidOperationException($"{roleType.Name} must extend {typeof(IdentityRole).FullName}.");
             }
             if (!typeof(IdentityUserClaim).IsAssignableFrom(typeof(TUserClaim)))
             {
@@ -86,18 +112,14 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             {
                 throw new InvalidOperationException($"{typeof(TUserToken).Name} must extend {typeof(IdentityUserToken).FullName}.");
             }
-            if (!typeof(IdentityRole).IsAssignableFrom(builder.RoleType))
-            {
-                throw new InvalidOperationException($"{builder.RoleType.Name} must extend {typeof(IdentityRole).FullName}.");
-            }
             if (!typeof(IdentityRoleClaim).IsAssignableFrom(typeof(TRoleClaim)))
             {
                 throw new InvalidOperationException($"{typeof(TRoleClaim).Name} must extend {typeof(IdentityRoleClaim).FullName}.");
             }
 
             Type userStoreType = typeof(UserStore<,,,,,,>).MakeGenericType(
-                builder.UserType, 
-                builder.RoleType, 
+                userType,
+                roleType, 
                 typeof(TUserClaim), 
                 typeof(TUserRole), 
                 typeof(TUserLogin), 
@@ -105,13 +127,13 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 typeof(TRoleClaim));
 
             Type roleStoreType = typeof(RoleStore<,,>).MakeGenericType(
-                builder.RoleType,
+                roleType,
                 typeof(TUserRole),
                 typeof(TRoleClaim));
 
             builder.Services.TryAddScoped<ICosmosIdentityStorageProvider, CosmosIdentityStorageProvider>();
-            builder.Services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(builder.UserType), userStoreType);
-            builder.Services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(builder.RoleType), roleStoreType);
+            builder.Services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
+            builder.Services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(roleType), roleStoreType);
 
             return builder;
         }
