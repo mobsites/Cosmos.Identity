@@ -245,12 +245,15 @@ If the container to be used as the identity store already exists and is used to 
 
 ## Customizing Cosmos Identity
 
-The samples folder contains a complete [example](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/tree/master/samples/Extended.Cosmos.Identity.Razor.Sample) of how this is done. Aside from extending all the identity models that are to be stored in a Cosmos container, three steps are critical in making this work:
+The default storage provider `CosmosStorageProvider` can be extended or completely replaced. The samples folder contains a complete example `Extended.Cosmos.Identity.Razor.Sample` of how extending it is done. Extending it is the simplest of the two as the identity implementation is ready to go, allowing for other members to be added to handle special use cases for other application model types. The inherited members, such as `CreateAsync`, can be used for other application model types provided that the types implement the `ICosmosStorageType` interface. The steps for setting this up are fairly similiar to the steps directly [above](#extending-cosmos-identity-using-a-different-partition-key-path) except that the first type parameter to the generic `AddCosmosIdentity<TCustomStorageProvider, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>` would be the new extended type.
 
+As for completely replacing the default storage provider `CosmosStorageProvider`, the new custom type would have to implement the `IIdentityStorageProvider` interface. The default storage provider can be used as a guide or not. It's totally up to you at this point.
+
+**NOTE: All of the overloaded `AddCosmosIdentity` services extension methods use the `AddSingleton` services extension method to register the storage provider for dependency injection. The Azure Cosmos team actually recommends doing this as it is better performant to initiallize the cosmos client once on startup.**
 
 ## Samples
 
-The samples demonstrate both the default implementation of Cosmos Identity and a custom extension of Cosmos Identity using a Razor Pages web app built with the .Net Core 3.0 Web App template with individual account users. `Microsoft.AspNetCore.Identity.EntityFrameworkCore` was then stripped out, leaving only `Microsoft.AspNetCore.Identity`. 
+The samples demonstrate both the default implementation of Cosmos Identity and an extended Cosmos Identity implementation using a Razor Pages web app built with the .Net Core 3.0 Web App template with individual account users. `Microsoft.AspNetCore.Identity.EntityFrameworkCore` was then stripped out, leaving only `Microsoft.AspNetCore.Identity`. 
 
 **Note: When wiring up your own project, if any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.**
 
