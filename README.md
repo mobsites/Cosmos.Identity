@@ -28,7 +28,7 @@ Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v
 
 Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below. 
 
-**NOTE: There is one caveat to keep in mind when using the default implementation—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have a partition key path of `/PartitionKey` in order to use the default implementation, else a custom extended Cosmos Identity approach must be used (see [Extending Cosmos Identity](https://github.com/Mobsites/AspNetCore.Identity.Cosmos#extending-cosmos-identity) for guidance).**
+**NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [Extending Cosmos Identity](https://github.com/Mobsites/AspNetCore.Identity.Cosmos#extending-cosmos-identity) or [Customizing Cosmos Identity](https://github.com/Mobsites/AspNetCore.Identity.Cosmos#extending-cosmos-identity) for guidance).**
 
 1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
 
@@ -36,12 +36,12 @@ Using the default implementation of Cosmos Identity is fairly straightforward. J
 Install-Package Mobsites.AspNetCore.Identity.Cosmos
 ```
 
-2. Add a Cosmos connection string to appsettings.json using the name `CosmosIdentity`:
+2. Add a Cosmos connection string to appsettings.json using the name `CosmosStorageProvider`:
 
 ```
 {
   "ConnectionStrings": {
-    "CosmosIdentity": "{cosmos-connection-string}"
+    "CosmosStorageProvider": "{cosmos-connection-string}"
   },
   ...
 }
@@ -52,8 +52,8 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 ```
 {
   ...
-  "IdentityContainerId": "{containerId}",
-  "IdentityDatabaseId": "{databaseId}",
+  "CosmosStorageProviderDatabaseId": "{databaseId}",
+  "CosmosStorageProviderContainerId": "{containerId}",
   ...
 }
 ```
@@ -64,7 +64,7 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 using Mobsites.AspNetCore.Identity.Cosmos;
 ```
 
-5. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity. Pass in Identity options or not. Add any other default `IdentityBuilder` methods:
+5. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity. Pass in Identity options or not. Add any other `IdentityBuilder` methods:
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -90,7 +90,7 @@ public void ConfigureServices(IServiceCollection services)
             options.Lockout.MaxFailedAccessAttempts = 5;
 
         })
-        // Add other default IdentityBuilder methods.
+        // Add other IdentityBuilder methods.
         .AddDefaultUI()
         .AddDefaultTokenProviders();
 
@@ -112,7 +112,7 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 ## Extending Cosmos Identity
 
-Cosmos Identity can be extended much the same way the default identity models can be extended when using `Microsoft.AspNetCore.Identity.EntityFrameworkCore` except that no migrations are necessary. That's the beauty of using Cosmos DB for an identity store. Just extend and store.
+Cosmos Identity can be extended much the same way that `Microsoft.AspNetCore.Identity.EntityFrameworkCore` can be except that no migrations are necessary. That's the beauty of using Cosmos DB for an identity store. Just extend and store.
 
 #### Extending just the base `IdentityUser` and `IdentityRole` classes
 
@@ -124,12 +124,12 @@ If only the base `IdentityUser` and `IdentityRole` classes need to be extended, 
 Install-Package Mobsites.AspNetCore.Identity.Cosmos
 ```
 
-2. Add a Cosmos connection string to appsettings.json using the name `CosmosIdentity`:
+2. Add a Cosmos connection string to appsettings.json using the name `CosmosStorageProvider`:
 
 ```
 {
   "ConnectionStrings": {
-    "CosmosIdentity": "{cosmos-connection-string}"
+    "CosmosStorageProvider": "{cosmos-connection-string}"
   },
   ...
 }
@@ -140,8 +140,8 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 ```
 {
   ...
-  "IdentityContainerId": "{containerId}",
-  "IdentityDatabaseId": "{databaseId}",
+  "CosmosStorageProviderDatabaseId": "{databaseId}",
+  "CosmosStorageProviderContainerId": "{containerId}",
   ...
 }
 ```
@@ -233,6 +233,8 @@ The samples folder contains a complete [example](https://github.com/Mobsites/Asp
 // Override Base property and assign correct Partition Key value.
  public override string PartitionKey => Discriminator;
 ```
+
+## Customizing Cosmos Identity
 
 ## Samples
 
