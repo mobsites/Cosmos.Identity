@@ -28,7 +28,7 @@ Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v
 
 Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below. 
 
-**NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [Extending Cosmos Identity](#extending-cosmos-identity) or [Customizing Cosmos Identity](#customizing-cosmos-identity) for guidance).**
+**NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [Extending Cosmos Identity](#extending-cosmos-identity-using-a-different-partition-key-path) or [Customizing Cosmos Identity](#customizing-cosmos-identity) for guidance).**
 
 1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
 
@@ -216,15 +216,27 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 8. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
 
+#### Extending the other base identity classes
+
+The other base identity classes can be extended as well. Just follow the steps [above](#extending-just-the-base-identityuser-class), extending the desired classes and using the correct generic version of `AddCosmosIdentity` with `CosmosStorageProvider` as the first type parameter.
+
 #### Extending Cosmos Identity using a different partition key path
 
-The samples folder contains a complete [example](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/tree/master/samples/Extended.Cosmos.Identity.Razor.Sample) of how this is done. Aside from extending all the identity models that are to be stored in a Cosmos container, three steps are critical in making this work:
+If the container to be used as the identity store already exists and is used to house other application model types but already has a set partition key path that is not `/PartitionKey`, then the default storage provider `CosmosStorageProvider` can be configured to use a different partition key path. Follow the steps outlined above and extend **all** the base identity classes with the following caveats:
 
-1. Create a class which implements `ICosmosIdentityContainer`. The [default one](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/src/Storage/CosmosIdentityContainer.cs) can be used as a guide. This is passed in as the first type parameter in the generic `AddCosmosIdentity` service extension method.
+1. Add the following key-value pair to appsettings.json using the partition key path for the existing container for the value:
 
-2. Make sure that **all** extended models contain a public property that matches the partition key path. Thus, if the container that will be used has a partition path of `/Discriminator`, then each model will have a public property named `Discriminator`.
+```
+{
+  ...
+  "CosmosStorageProviderPartitionKeyPath": "{partition-key-path}",
+  ...
+}
+```
 
-3. Finally, the base class virtual property `PartitionKey` must be overriden to contain the same value of the partition key path property:
+2. Make sure that **all** extended identity models contain a public property that matches the partition key path. Thus, if the container that will be used has a partition path of `/Discriminator`, then each extended identity model will have a public property named `Discriminator`.
+
+3. Finally, override the base class virtual property `PartitionKey` in each extended identity model to contain the same value of the partition key path property:
 
 ```csharp
 // Override Base property and assign correct Partition Key value.
@@ -232,6 +244,9 @@ The samples folder contains a complete [example](https://github.com/Mobsites/Asp
 ```
 
 ## Customizing Cosmos Identity
+
+The samples folder contains a complete [example](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/tree/master/samples/Extended.Cosmos.Identity.Razor.Sample) of how this is done. Aside from extending all the identity models that are to be stored in a Cosmos container, three steps are critical in making this work:
+
 
 ## Samples
 
