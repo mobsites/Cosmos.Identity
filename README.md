@@ -259,7 +259,7 @@ The samples demonstrate both the default implementation of Cosmos Identity and a
 
 #### Required to run the samples
 
-As noted above, the samples use .Net Core 3.0, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up the sample.
+As noted above, the samples use .Net Core 3.0, so a suitable dev environment is necessary. (The Cosmos Identity library itself is .Net Standard 2.0 based and should work for .Net Core 2.2 based apps. There are plans to test this with sample apps.) Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up the sample.
 
 #### On first running one of the samples
 
