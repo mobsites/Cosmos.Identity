@@ -44,7 +44,7 @@ namespace Default.Cosmos.Identity.Razor.Sample
                     options.Lockout.MaxFailedAccessAttempts = 5;
 
                 })
-                // Add other default IdentityBuilder methods.
+                // Add other IdentityBuilder methods.
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
