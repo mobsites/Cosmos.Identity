@@ -28,7 +28,7 @@ Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v
 
 Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below. 
 
-**NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [Extending Cosmos Identity](https://github.com/Mobsites/AspNetCore.Identity.Cosmos#extending-cosmos-identity) or [Customizing Cosmos Identity](https://github.com/Mobsites/AspNetCore.Identity.Cosmos#extending-cosmos-identity) for guidance).**
+**NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [Extending Cosmos Identity](#extending-cosmos-identity) or [Customizing Cosmos Identity](#customizing-cosmos-identity) for guidance).**
 
 1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
 
@@ -114,9 +114,9 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 Cosmos Identity can be extended much the same way that `Microsoft.AspNetCore.Identity.EntityFrameworkCore` can be except that no migrations are necessary. That's the beauty of using Cosmos DB for an identity store. Just extend and store.
 
-#### Extending just the base `IdentityUser` and `IdentityRole` classes
+#### Extending just the base `IdentityUser` class
 
-If only the base `IdentityUser` and `IdentityRole` classes need to be extended, and a partition key path of `/PartitionKey` is non-conflicting (see [Getting Started](#getting-started) above for more info on why this is important), then follow the steps below.
+If only the base `IdentityUser` class needs to be extended, and a partition key path of `/PartitionKey` is non-conflicting (see [Getting Started](#getting-started) above on why this is important), then follow the steps below.
 
 1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
 
@@ -146,7 +146,7 @@ Install-Package Mobsites.AspNetCore.Identity.Cosmos
 }
 ```
 
-4. Create two models that inherit the base `IdentityUser` and `IdentityRole` classes from the `Mobsites.AspNetCore.Identity.Cosmos` namespace:
+4. Create a new model that inherits the base `IdentityUser` class from the `Mobsites.AspNetCore.Identity.Cosmos` namespace:
 
 ```csharp
 using Mobsites.AspNetCore.Identity.Cosmos;
@@ -158,30 +158,27 @@ namespace MyExtendedExamples
         // Do override base virtual members
         // Do add new members
     }
-  
-    public class ApplicationRole : IdentityRole
-    {
-        // Do override base virtual members
-        // Do add new members
-    }
 }
 ```
-5. Add the following `using` statements to the Startup class (one is the namespace which contains the extended models):
+5. Add the following `using` statements to the Startup class (one is the namespace which contains the extended `IdentityUser` model):
 
 ```csharp
 using Mobsites.AspNetCore.Identity.Cosmos;
 using MyExtendedExamples;
 ```
 
-6. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity. Pass in Identity options or not. Add any other default `IdentityBuilder` methods:
+6. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity using the generic `AddCosmosIdentity<TCustomStorageProvider, TUser>` services extension method. Pass in Identity options or not. Add any other `IdentityBuilder` methods:
+
+**Note below how `CosmosStorageProvider` is the first type parameter used in the generic version of `AddCosmosIdentity`. This is the default storage provider implementation, which can be replaced with a customized implementation (see [Customizing Cosmos Identity](#customizing-cosmos-identity)).**
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    // Add default Cosmos Identity Implementation using extended models.
+    // Add default Cosmos Identity Implementation using extended IdentityUser model.
+    // First type parameter is the default storage provider implementation. Not looking to customize here.
     // Passing in Identity options are...well, optional.
     services
-        .AddCosmosIdentity<CosmosIdentityContainer, ApplicationUser, ApplicationRole>(options =>
+        .AddCosmosIdentity<CosmosStorageProvider, ApplicationUser>(options =>
         {
             // User settings
             options.User.RequireUniqueEmail = true;
@@ -199,7 +196,7 @@ public void ConfigureServices(IServiceCollection services)
             options.Lockout.MaxFailedAccessAttempts = 5;
 
         })
-        // Add other default IdentityBuilder methods.
+        // Add other IdentityBuilder methods.
         .AddDefaultUI()
         .AddDefaultTokenProviders();
 
@@ -219,7 +216,7 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 8. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
 
-#### Extending Cosmos Identity using a different key path
+#### Extending Cosmos Identity using a different partition key path
 
 The samples folder contains a complete [example](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/tree/master/samples/Extended.Cosmos.Identity.Razor.Sample) of how this is done. Aside from extending all the identity models that are to be stored in a Cosmos container, three steps are critical in making this work:
 
