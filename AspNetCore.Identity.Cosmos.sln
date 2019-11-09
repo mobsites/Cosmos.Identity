@@ -9,9 +9,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Identity.Cosmos"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{1F0AE621-7282-48DB-B75A-F595FC8A4833}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Default.Cosmos.Identity.Razor.Sample", "samples\Default.Cosmos.Identity.Razor.Sample\Default.Cosmos.Identity.Razor.Sample.csproj", "{65018DED-BCFF-4424-9BD1-354D2A9DB232}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Net Core 2.2", ".Net Core 2.2", "{F45303B5-2F80-46F9-96FE-5E6379BBA7BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extended.Cosmos.Identity.Razor.Sample", "samples\Extended.Cosmos.Identity.Razor.Sample\Extended.Cosmos.Identity.Razor.Sample.csproj", "{BE6C7013-7C7A-4702-AC41-FB17A7E91BE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Default.Cosmos.Identity.Razor.Sample-2.2", "samples\.Net Core 2.2\Default.Cosmos.Identity.Razor.Sample-2.2\Default.Cosmos.Identity.Razor.Sample-2.2.csproj", "{7A2355F0-B19D-41CA-A463-AD96B9D8FF17}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Net Core 3.0", ".Net Core 3.0", "{3E992810-EFE3-4101-AB93-10E03AA9BC69}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Default.Cosmos.Identity.Razor.Sample-3.0", "samples\.Net Core 3.0\Default.Cosmos.Identity.Razor.Sample-3.0\Default.Cosmos.Identity.Razor.Sample-3.0.csproj", "{D7E4C364-A036-4198-968D-69D50E49F83B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extended.Cosmos.Identity.Razor.Sample-3.0", "samples\.Net Core 3.0\Extended.Cosmos.Identity.Razor.Sample-3.0\Extended.Cosmos.Identity.Razor.Sample-3.0.csproj", "{FEEBF2B5-B50B-4E7D-AA05-67C1D1701B0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{DC22D483-D789-43C2-B8A9-1C839D2B27FB}"
+	ProjectSection(SolutionItems) = preProject
+		samples\Default.Cosmos.Identity.Razor.Sample\wwwroot\images\sample-home-page-no-users.png = samples\Default.Cosmos.Identity.Razor.Sample\wwwroot\images\sample-home-page-no-users.png
+		samples\Default.Cosmos.Identity.Razor.Sample\wwwroot\images\sample-home-page-with-users.png = samples\Default.Cosmos.Identity.Razor.Sample\wwwroot\images\sample-home-page-with-users.png
+		samples\Default.Cosmos.Identity.Razor.Sample\wwwroot\images\sample-register-page.png = samples\Default.Cosmos.Identity.Razor.Sample\wwwroot\images\sample-register-page.png
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extended.Cosmos.Identity.Razor.Sample-2.2", "samples\.Net Core 2.2\Extended.Cosmos.Identity.Razor.Sample-2.2\Extended.Cosmos.Identity.Razor.Sample-2.2.csproj", "{3585F806-6A80-4DCC-B641-BFD83D296535}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,22 +38,34 @@ Global
 		{F4F4C6B7-0A00-4ABC-ABCD-922796507176}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4F4C6B7-0A00-4ABC-ABCD-922796507176}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4F4C6B7-0A00-4ABC-ABCD-922796507176}.Release|Any CPU.Build.0 = Release|Any CPU
-		{65018DED-BCFF-4424-9BD1-354D2A9DB232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{65018DED-BCFF-4424-9BD1-354D2A9DB232}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{65018DED-BCFF-4424-9BD1-354D2A9DB232}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{65018DED-BCFF-4424-9BD1-354D2A9DB232}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE6C7013-7C7A-4702-AC41-FB17A7E91BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE6C7013-7C7A-4702-AC41-FB17A7E91BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE6C7013-7C7A-4702-AC41-FB17A7E91BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE6C7013-7C7A-4702-AC41-FB17A7E91BE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A2355F0-B19D-41CA-A463-AD96B9D8FF17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A2355F0-B19D-41CA-A463-AD96B9D8FF17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A2355F0-B19D-41CA-A463-AD96B9D8FF17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A2355F0-B19D-41CA-A463-AD96B9D8FF17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7E4C364-A036-4198-968D-69D50E49F83B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7E4C364-A036-4198-968D-69D50E49F83B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7E4C364-A036-4198-968D-69D50E49F83B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7E4C364-A036-4198-968D-69D50E49F83B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEEBF2B5-B50B-4E7D-AA05-67C1D1701B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEEBF2B5-B50B-4E7D-AA05-67C1D1701B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEEBF2B5-B50B-4E7D-AA05-67C1D1701B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEEBF2B5-B50B-4E7D-AA05-67C1D1701B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3585F806-6A80-4DCC-B641-BFD83D296535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3585F806-6A80-4DCC-B641-BFD83D296535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3585F806-6A80-4DCC-B641-BFD83D296535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3585F806-6A80-4DCC-B641-BFD83D296535}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F4F4C6B7-0A00-4ABC-ABCD-922796507176} = {6E9EA9BA-E2F1-4632-B72B-9639566F4B49}
-		{65018DED-BCFF-4424-9BD1-354D2A9DB232} = {1F0AE621-7282-48DB-B75A-F595FC8A4833}
-		{BE6C7013-7C7A-4702-AC41-FB17A7E91BE9} = {1F0AE621-7282-48DB-B75A-F595FC8A4833}
+		{F45303B5-2F80-46F9-96FE-5E6379BBA7BC} = {1F0AE621-7282-48DB-B75A-F595FC8A4833}
+		{7A2355F0-B19D-41CA-A463-AD96B9D8FF17} = {F45303B5-2F80-46F9-96FE-5E6379BBA7BC}
+		{3E992810-EFE3-4101-AB93-10E03AA9BC69} = {1F0AE621-7282-48DB-B75A-F595FC8A4833}
+		{D7E4C364-A036-4198-968D-69D50E49F83B} = {3E992810-EFE3-4101-AB93-10E03AA9BC69}
+		{FEEBF2B5-B50B-4E7D-AA05-67C1D1701B0F} = {3E992810-EFE3-4101-AB93-10E03AA9BC69}
+		{3585F806-6A80-4DCC-B641-BFD83D296535} = {F45303B5-2F80-46F9-96FE-5E6379BBA7BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9DB1DF08-7A71-4797-8AE3-215E7CF9DD2B}
