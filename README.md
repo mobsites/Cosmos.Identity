@@ -7,9 +7,9 @@ Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://github
 ## Dependencies
 
 ###### .NETStandard 2.0
+* Microsoft.Azure.Cosmos (>= 3.4.1)
 * Microsoft.AspNetCore.Identity (>= 2.2.0)
-* Microsoft.Azure.Cosmos (>= 3.4.0)
-* Microsoft.Extensions.Identity.Stores (>= 3.0.0)
+* Microsoft.Extensions.Identity.Stores (>= 2.2.0)
 * System.Text.Json (>= 4.6.0)
 
 ## Design and Development
@@ -253,20 +253,20 @@ As for completely replacing the default storage provider `CosmosStorageProvider`
 
 ## Samples
 
-The samples demonstrate both the default implementation of Cosmos Identity and an extended Cosmos Identity implementation using a Razor Pages web app built with the .Net Core 3.0 Web App template with individual account users. `Microsoft.AspNetCore.Identity.EntityFrameworkCore` was then stripped out, leaving only `Microsoft.AspNetCore.Identity`. 
+The samples demonstrate both the default implementation of Cosmos Identity and an extended implementation of Cosmos Identity in a .Net Core 2.2 or 3.0 Razor Pages Web app. They were built using the web app template with individual account users for authentication. Then the Login and Register pages were scaffolded. Finally, Entity Framework Core was stripped out, leaving only `Microsoft.AspNetCore.Identity`. 
 
-**Note: When wiring up your own project, if any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.**
+**Note: When wiring up your own project, if any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out Entity Framework Core. The identity scaffolding engine requires a DbContext class. Otherwise, you will have to build any Identity UI manually.**
 
 #### Required to run the samples
 
-As noted above, the samples use .Net Core 3.0, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up the sample.
+As noted above, the samples are .Net Core 2.2 and 3.0 Razor Pages Web apps, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up a sample.
 
 #### On first running one of the samples
 
-![Sample Home Page](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/samples/Default.Cosmos.Identity.Razor.Sample/wwwroot/images/sample-home-page-no-users.png)
+![Sample Home Page](assets/sample-home-page-no-users.png)
 
 #### Register users
-![Sample Register Page](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/samples/Default.Cosmos.Identity.Razor.Sample/wwwroot/images/sample-register-page.png)
+![Sample Register Page](assets/sample-register-page.png)
 
 #### After Registering Users
-![Sample Home Page With Users](https://github.com/Mobsites/AspNetCore.Identity.Cosmos/blob/master/samples/Default.Cosmos.Identity.Razor.Sample/wwwroot/images/sample-home-page-with-users.png)
+![Sample Home Page With Users](assets/sample-home-page-with-users.png)
