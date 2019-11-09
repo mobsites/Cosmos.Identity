@@ -16,25 +16,27 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     /// <summary>
     ///     Represents a new instance of a persistence store for the specified types.
     /// </summary>
+    /// <typeparam name="TCustomStorageProvider">The type representing a Cosmos storage provider.</typeparam>
     /// <typeparam name="TRole">The type representing a role.</typeparam>
     /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
     /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
-    public class RoleStore<TRole, TUserRole, TRoleClaim> :
+    public class RoleStore<TCustomStorageProvider, TRole, TUserRole, TRoleClaim> :
         RoleStoreBase<TRole, string, TUserRole, TRoleClaim>
+        where TCustomStorageProvider : IIdentityStorageProvider
         where TRole : IdentityRole, new()
         where TUserRole : IdentityUserRole, new()
         where TRoleClaim : IdentityRoleClaim, new()
     {
         #region Setup
 
-        private readonly ICosmosIdentityStorageProvider storageProvider;
+        private readonly TCustomStorageProvider storageProvider;
 
         /// <summary>
-        ///     Constructs a new instance of <see cref="RoleStore{TRole, TUserRole, TRoleClaim}"/>.
+        ///     Constructs a new instance of <see cref="RoleStore{TCustomStorageProvider, TRole, TUserRole, TRoleClaim}"/>.
         /// </summary>
         /// <param name="storageProvider">The provider used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(ICosmosIdentityStorageProvider storageProvider, IdentityErrorDescriber describer = null)
+        public RoleStore(TCustomStorageProvider storageProvider, IdentityErrorDescriber describer = null)
             : base(describer ?? new IdentityErrorDescriber())
         {
             this.storageProvider = storageProvider ?? throw new ArgumentNullException(nameof(storageProvider));

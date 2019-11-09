@@ -13,81 +13,69 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     public static class IdentityServiceCollectionExtensions
     {
         /// <summary>
-        ///     Adds and configures the identity system to use Cosmos as its persistence store.
+        ///     Adds and configures the identity system to use the default Cosmos Identity implementation as its persistence store.
         /// </summary>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
         public static IdentityBuilder AddCosmosIdentity(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
-        {
-            services
-                .AddSingleton<ICosmosIdentityContainer, CosmosIdentityContainer>();
-
-            return services
-                .AddIdentity<IdentityUser, IdentityRole>(setupAction)
-                .AddCosmosStores();
-        }
+            => services.AddCosmosIdentity<CosmosStorageProvider, IdentityUser, IdentityRole>(setupAction);
 
 
         /// <summary>
-        ///     Adds and configures the identity system to use Cosmos as its persistence store.
+        ///     Adds and configures the identity system to use Cosmos Identity as its persistence store 
+        ///     with a custom storage provider of the specified <typeparamref name="TCustomStorageProvider" />.
         /// </summary>
+        /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
-        public static IdentityBuilder AddCosmosIdentity<TCosmosIdentityContainer>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
-            where TCosmosIdentityContainer : ICosmosIdentityContainer
-        {
-            services
-                .AddSingleton(typeof(ICosmosIdentityContainer), typeof(TCosmosIdentityContainer));
-
-            return services
-                .AddIdentity<IdentityUser, IdentityRole>(setupAction)
-                .AddCosmosStores();
-        }
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddCosmosIdentity<TCustomStorageProvider>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
+            where TCustomStorageProvider : IIdentityStorageProvider
+            => services.AddCosmosIdentity<TCustomStorageProvider, IdentityUser, IdentityRole>(setupAction);
 
 
         /// <summary>
         ///     Adds and configures the identity system to use Cosmos as its persistence store.
         /// </summary>
+        /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
         /// <typeparam name="TUser">The type representing a user.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
-        public static IdentityBuilder AddCosmosIdentity<TCosmosIdentityContainer, TUser>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
-            where TCosmosIdentityContainer : ICosmosIdentityContainer
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddCosmosIdentity<TCustomStorageProvider, TUser>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
+            where TCustomStorageProvider : IIdentityStorageProvider
             where TUser : IdentityUser, new()
-        {
-            services
-                .AddSingleton(typeof(ICosmosIdentityContainer), typeof(TCosmosIdentityContainer));
-
-            return services
-                .AddIdentity<TUser, IdentityRole>(setupAction)
-                .AddCosmosStores();
-        }
+            => services.AddCosmosIdentity<TCustomStorageProvider, TUser, IdentityRole>(setupAction);
 
 
         /// <summary>
         ///     Adds and configures the identity system to use Cosmos as its persistence store.
         /// </summary>
+        /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
         /// <typeparam name="TUser">The type representing a user.</typeparam>
         /// <typeparam name="TRole">The type representing a role.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
-        public static IdentityBuilder AddCosmosIdentity<TCosmosIdentityContainer, TUser, TRole>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
-            where TCosmosIdentityContainer : ICosmosIdentityContainer
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddCosmosIdentity<TCustomStorageProvider, TUser, TRole>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
+            where TCustomStorageProvider : IIdentityStorageProvider
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
         {
             services
-                .AddSingleton(typeof(ICosmosIdentityContainer), typeof(TCosmosIdentityContainer));
+                .AddSingleton(typeof(TCustomStorageProvider));
 
             return services
                 .AddIdentity<TUser, TRole>(setupAction)
-                .AddCosmosStores();
+                .AddCosmosStores<TCustomStorageProvider>();
         }
 
 
         /// <summary>
         ///     Adds and configures the identity system to use Cosmos as its persistence store.
         /// </summary>
+        /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
         /// <typeparam name="TUser">The type representing a user.</typeparam>
         /// <typeparam name="TRole">The type representing a role.</typeparam>
         /// <typeparam name="TUserClaim">The type representing a user claim.</typeparam>
@@ -97,8 +85,9 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
-        public static IdentityBuilder AddCosmosIdentity<TCosmosIdentityContainer,TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
-            where TCosmosIdentityContainer : ICosmosIdentityContainer
+        /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
+        public static IdentityBuilder AddCosmosIdentity<TCustomStorageProvider, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(this IServiceCollection services, Action<IdentityOptions> setupAction = default)
+            where TCustomStorageProvider : IIdentityStorageProvider
             where TUser : IdentityUser, new()
             where TRole : IdentityRole, new()
             where TUserClaim : IdentityUserClaim, new()
@@ -108,11 +97,11 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             where TRoleClaim : IdentityRoleClaim, new()
         {
             services
-                .AddSingleton(typeof(ICosmosIdentityContainer), typeof(TCosmosIdentityContainer));
+                .AddSingleton(typeof(TCustomStorageProvider));
 
             return services
                 .AddIdentity<TUser, TRole>(setupAction)
-                .AddCosmosStores<TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>();
+                .AddCosmosStores<TCustomStorageProvider, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>();
         }
     }
 }

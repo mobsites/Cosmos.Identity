@@ -4,9 +4,9 @@
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     The interface to properties that the Cosmos identity storage provider expects.
+    ///     The interface to properties that the default Cosmos storage provider expects.
     /// </summary>
-    public interface ICosmosIdentity
+    public interface ICosmosStorageType
     {
         string Id { get; }
         string PartitionKey { get; }

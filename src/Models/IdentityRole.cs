@@ -6,9 +6,9 @@ using System;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     The required Cosmos implementation of an identity role which uses a string as a primary key.
+    ///     The required Cosmos Identity implementation of an identity role which uses a string as a primary key.
     /// </summary>
-    public class IdentityRole : Microsoft.AspNetCore.Identity.IdentityRole, ICosmosIdentity
+    public class IdentityRole : Microsoft.AspNetCore.Identity.IdentityRole, ICosmosStorageType
     {
         /// <summary>
         ///     Override base class property so that it can be serialized correctly as primary key "id" for Cosmos.
@@ -18,7 +18,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         public override string Id { get; set; }
 
         /// <summary>
-        ///     Override this to provide a value for the partition key parameter in the Cosmos container method calls.
+        ///     Override this to provide a value for the partition key which is user by the default Cosmos storage provider's members.
         ///     NOTE: The derived class must also include a property that matches the partition key path that was used when creating the container.
         /// </summary>
         public virtual string PartitionKey => nameof(IdentityRole);

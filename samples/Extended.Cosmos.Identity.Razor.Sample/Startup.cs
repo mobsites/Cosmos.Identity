@@ -23,9 +23,10 @@ namespace Extended.Cosmos.Identity.Razor.Sample
         public void ConfigureServices(IServiceCollection services)
         {
             // Add Cosmos Identity Implementation with custom identity container and extended identity models.
+            // First type parameter is an extended storage provider implementation. Not looking to customize here, just extend.
             // Passing in Identity options are...well, optional.
             services
-                .AddCosmosIdentity<CustomCosmosIdentityContainer, ApplicationUser, ApplicationRole, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>(options =>
+                .AddCosmosIdentity<ExtendedCosmosStorageProvider, ApplicationUser, ApplicationRole, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>(options =>
                 {
                     // User settings
                     options.User.RequireUniqueEmail = true;
@@ -43,7 +44,7 @@ namespace Extended.Cosmos.Identity.Razor.Sample
                     options.Lockout.MaxFailedAccessAttempts = 5;
 
                 })
-                // Add other default IdentityBuilder methods.
+                // Add other IdentityBuilder methods.
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 

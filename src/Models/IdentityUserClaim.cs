@@ -6,9 +6,9 @@ using System;
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
-    ///     The required Cosmos implementation of an identity user claim which uses a string as a primary key.
+    ///     The required Cosmos Identity implementation of an identity user claim which uses a string as a primary key.
     /// </summary>
-    public class IdentityUserClaim : Microsoft.AspNetCore.Identity.IdentityUserClaim<string>, ICosmosIdentity
+    public class IdentityUserClaim : Microsoft.AspNetCore.Identity.IdentityUserClaim<string>, ICosmosStorageType
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityUserClaim"/>.
@@ -30,7 +30,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         public new string Id { get; set; }
 
         /// <summary>
-        ///     Override this to provide a value for the partition key parameter in the Cosmos container method calls.
+        ///     Override this to provide a value for the partition key which is user by the default Cosmos storage provider's members.
         ///     NOTE: The derived class must also include a property that matches the partition key path that was used when creating the container.
         /// </summary>
         public virtual string PartitionKey => nameof(IdentityUserClaim);
