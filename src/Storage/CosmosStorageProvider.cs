@@ -21,7 +21,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
         private readonly CosmosClient cosmosClient;
         private readonly Database database;
-        private readonly Container container;
+
+        public Container Container { get; set; }
 
         /// <summary>
         ///     Constructs a new instance of <see cref="CosmosStorageProvider"/>.
@@ -70,7 +71,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
 
             database = cosmosClient.CreateDatabaseIfNotExistsAsync(databaseId).Result;
 
-            container = database.CreateContainerIfNotExistsAsync(containerId, partitionKeyPath).Result;
+            Container = database.CreateContainerIfNotExistsAsync(containerId, partitionKeyPath).Result;
         }
 
         #endregion
@@ -85,7 +86,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         {
             var partitionKey = new TCosmosStorageType().PartitionKey;
 
-            return container.GetItemLinqQueryable<TCosmosStorageType>(
+            return Container.GetItemLinqQueryable<TCosmosStorageType>(
                 allowSynchronousQueryExecution:true,
                 requestOptions: new QueryRequestOptions
                 {
@@ -122,7 +123,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     var partitionKey = string.IsNullOrEmpty(cosmosStorageType.PartitionKey) ? PartitionKey.None : new PartitionKey(cosmosStorageType.PartitionKey);
 
-                    var response = await container.CreateItemAsync(cosmosStorageType, partitionKey, cancellationToken: cancellationToken);
+                    var response = await Container.CreateItemAsync(cosmosStorageType, partitionKey, cancellationToken: cancellationToken);
 
                     result = response.StatusCode >= HttpStatusCode.BadRequest ?
                         IdentityResult.Failed(new IdentityError() { Code = response.StatusCode.ToString(), Description = $"The storage type {cosmosStorageType.GetType().Name} was not created." }) :
@@ -166,7 +167,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     var partitionKey = string.IsNullOrEmpty(cosmosStorageType.PartitionKey) ? PartitionKey.None : new PartitionKey(cosmosStorageType.PartitionKey);
 
-                    var response = await container.ReplaceItemAsync(cosmosStorageType, cosmosStorageType.Id, partitionKey, cancellationToken: cancellationToken);
+                    var response = await Container.ReplaceItemAsync(cosmosStorageType, cosmosStorageType.Id, partitionKey, cancellationToken: cancellationToken);
 
                     result = response.StatusCode >= HttpStatusCode.BadRequest ?
                         IdentityResult.Failed(new IdentityError() { Code = response.StatusCode.ToString(), Description = $"The storage type {cosmosStorageType.GetType().Name} was not updated." }) :
@@ -210,7 +211,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 {
                     var partitionKey = string.IsNullOrEmpty(cosmosStorageType.PartitionKey) ? PartitionKey.None : new PartitionKey(cosmosStorageType.PartitionKey);
 
-                    var response = await container.DeleteItemAsync<TCosmosStorageType>(cosmosStorageType.Id, partitionKey, cancellationToken: cancellationToken);
+                    var response = await Container.DeleteItemAsync<TCosmosStorageType>(cosmosStorageType.Id, partitionKey, cancellationToken: cancellationToken);
 
                     result = response.StatusCode >= HttpStatusCode.BadRequest ?
                         IdentityResult.Failed(new IdentityError() { Code = response.StatusCode.ToString(), Description = $"The storage type {cosmosStorageType.GetType().Name} was not deleted." }) :
@@ -250,7 +251,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                     var cosmosStorageType = new TCosmosStorageType();
                     var partitionKey = string.IsNullOrEmpty(cosmosStorageType.PartitionKey) ? PartitionKey.None : new PartitionKey(cosmosStorageType.PartitionKey);
 
-                    return await container.ReadItemAsync<TCosmosStorageType>(id, partitionKey, cancellationToken: cancellationToken);
+                    return await Container.ReadItemAsync<TCosmosStorageType>(id, partitionKey, cancellationToken: cancellationToken);
                 }
                 catch (CosmosException)
                 {

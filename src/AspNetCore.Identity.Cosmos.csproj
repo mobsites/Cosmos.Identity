@@ -13,8 +13,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>mobsites-logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Redesigned to support a custom Cosmos storage provider implementation, rolled back Microsoft.Extensions.Identity.Stores version to support .Net Core 2.2, and updated Microsoft.Azure.Cosmos version.</PackageReleaseNotes>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageReleaseNotes>Exposed identity container to support extended approach. Also exposed three Cosmos meta-properties.</PackageReleaseNotes>
+    <PackageVersion>2.1.0</PackageVersion>
     <PackageTags>identity;membership;storage provider;azure;cosmos;cosmosdb;documentdb;nosql;netstandard;dotnetcore;netcore;aspnetcore</PackageTags>
     <PackageProjectUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>

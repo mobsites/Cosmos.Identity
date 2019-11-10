@@ -1,6 +1,7 @@
 ﻿// © 2019 Mobsites. All rights reserved.
 // Licensed under the MIT License.
 
+using Mobsites.AspNetCore.Identity.Cosmos.Models;
 using System;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos
@@ -11,28 +12,60 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     public class IdentityUserToken : Microsoft.AspNetCore.Identity.IdentityUserToken<string>, ICosmosStorageType
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityUserToken"/>.
+        ///     Initializes a new instance of <see cref="IdentityUserToken"/>.
         /// </summary>
         /// <remarks>
-        /// The Id property is initialized to form a new GUID string value.
+        ///     The Id property is initialized to form a new GUID string value.
         /// </remarks>
         public IdentityUserToken()
         {
             Id = Guid.NewGuid().ToString();
         }
 
+
         /// <summary>
+        ///     Gets the unique id associated with the item from the Azure Cosmos DB service.
+        /// </summary>
+        /// <remarks>
         ///     Cosmos requires a string property named "id" as a primary key. 
         ///     The base class does not provide one to override or hide.
-        /// </summary>
+        /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
         public string Id { get; set; }
 
+
         /// <summary>
-        ///     Override this to provide a value for the partition key which is user by the default Cosmos storage provider's members.
-        ///     NOTE: The derived class must also include a property that matches the partition key path that was used when creating the container.
+        ///     Gets the partition key used by the default Cosmos storage provider.
         /// </summary>
+        /// <remarks>
+        ///     Override this to provide a value that is different than the default.
+        /// </remarks>
         public virtual string PartitionKey => nameof(IdentityUserToken);
+
+
+        /// <summary>
+        ///     Gets the time to live in seconds of the item in the Azure Cosmos DB service.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, PropertyName = "ttl")]
+        [System.Text.Json.Serialization.JsonPropertyName("ttl")]
+        public int? TimeToLive { get; set; }
+
+
+        /// <summary>
+        ///     Gets the entity tag associated with the item from the Azure Cosmos DB service.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("_etag")]
+        [System.Text.Json.Serialization.JsonPropertyName("_etag")]
+        public string Etag { get; set; }
+
+
+        /// <summary>
+        ///     Gets the last modified timestamp associated with the item from the Azure Cosmos DB service.
+        /// </summary>
+        [Newtonsoft.Json.JsonConverter(typeof(UnixDateTimeConverter))]
+        [Newtonsoft.Json.JsonProperty("_ts")]
+        [System.Text.Json.Serialization.JsonPropertyName("_ts")]
+        public DateTime Timestamp { get; set; }
     }
 }

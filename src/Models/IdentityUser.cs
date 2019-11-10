@@ -1,6 +1,9 @@
 ﻿// © 2019 Mobsites. All rights reserved.
 // Licensed under the MIT License.
 
+using Mobsites.AspNetCore.Identity.Cosmos.Models;
+using System;
+
 namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     /// <summary>
@@ -9,16 +12,22 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
     public class IdentityUser : Microsoft.AspNetCore.Identity.IdentityUser, ICosmosStorageType
     {
         /// <summary>
-        ///     Override base class property so that it can be serialized correctly as primary key "id" for Cosmos.
+        ///     Gets the unique id associated with the item from the Azure Cosmos DB service.
         /// </summary>
+        /// <remarks>
+        ///     This overrides the base class property so that it can be serialized correctly as primary key "id" for Cosmos.
+        /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         [System.Text.Json.Serialization.JsonPropertyName("id")]
         public override string Id { get; set; }
 
+
         /// <summary>
-        ///     Override this to provide a value for the partition key which is user by the default Cosmos storage provider's members.
-        ///     NOTE: The derived class must also include a property that matches the partition key path that was used when creating the container.
+        ///     Gets the partition key used by the default Cosmos storage provider.
         /// </summary>
+        /// <remarks>
+        ///     Override this to provide a value that is different than the default.
+        /// </remarks>
         public virtual string PartitionKey => nameof(IdentityUser);
 
 
@@ -31,6 +40,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </remarks>
         public string FlattenRoleNames { get; set; }
 
+
         /// <summary>
         ///     A comma-separated flatten list of the role ids that a user has.
         /// </summary>
@@ -40,6 +50,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// </remarks>
         public string FlattenRoleIds { get; set; }
 
+
         /// <summary>
         ///     A comma-separated flatten list of the claims that a user has.
         /// </summary>
@@ -48,5 +59,30 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         ///     so keeping a flatten list of type string allows for using built-in Contains() query on users without the need for a join.
         /// </remarks>
         public string FlattenClaims { get; set; }
+
+
+        /// <summary>
+        ///     Gets the time to live in seconds of the item in the Azure Cosmos DB service.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, PropertyName = "ttl")]
+        [System.Text.Json.Serialization.JsonPropertyName("ttl")]
+        public int? TimeToLive { get; set; }
+
+
+        /// <summary>
+        ///     Gets the entity tag associated with the item from the Azure Cosmos DB service.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("_etag")]
+        [System.Text.Json.Serialization.JsonPropertyName("_etag")]
+        public string Etag { get; set; }
+
+
+        /// <summary>
+        ///     Gets the last modified timestamp associated with the item from the Azure Cosmos DB service.
+        /// </summary>
+        [Newtonsoft.Json.JsonConverter(typeof(UnixDateTimeConverter))]
+        [Newtonsoft.Json.JsonProperty("_ts")]
+        [System.Text.Json.Serialization.JsonPropertyName("_ts")]
+        public DateTime Timestamp { get; set; }
     }
 }
