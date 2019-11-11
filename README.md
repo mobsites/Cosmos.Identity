@@ -55,8 +55,7 @@ public void ConfigureServices(IServiceCollection services)
     services
         .AddCosmosStorageProvider(options =>
         {
-            // options.ConnectionString defaults to the default Azure Cosmos DB Emulator connection string, 
-            // which is what is desired here for the sample.
+            options.ConnectionString = "{cosmos-connection-string}";
             options.CosmosClientOptions = new CosmosClientOptions
             {
                 SerializerOptions = new CosmosSerializationOptions
@@ -64,10 +63,10 @@ public void ConfigureServices(IServiceCollection services)
                     IgnoreNullValues = false
                 }
             };
-            options.DatabaseId = "DefaultCosmosIdentity_3_0";
+            options.DatabaseId = "{database-id}";
             options.ContainerProperties = new ContainerProperties
             {
-                Id = "Data",
+                Id = "{container-id}",
                 //PartitionKeyPath defaults to "/PartitionKey", which is what is desired for the default setup.
             };
         });
@@ -171,8 +170,7 @@ public void ConfigureServices(IServiceCollection services)
     services
         .AddCosmosStorageProvider(options =>
         {
-            // options.ConnectionString defaults to the default Azure Cosmos DB Emulator connection string, 
-            // which is what is desired here for the sample.
+            options.ConnectionString = "{cosmos-connection-string}";
             options.CosmosClientOptions = new CosmosClientOptions
             {
                 SerializerOptions = new CosmosSerializationOptions
@@ -180,10 +178,10 @@ public void ConfigureServices(IServiceCollection services)
                     IgnoreNullValues = false
                 }
             };
-            options.DatabaseId = "DefaultCosmosIdentity_3_0";
+            options.DatabaseId = "{database-id}";
             options.ContainerProperties = new ContainerProperties
             {
-                Id = "Data",
+                Id = "{container-id}",
                 //PartitionKeyPath defaults to "/PartitionKey", which is what is desired for the default setup.
             };
         });
