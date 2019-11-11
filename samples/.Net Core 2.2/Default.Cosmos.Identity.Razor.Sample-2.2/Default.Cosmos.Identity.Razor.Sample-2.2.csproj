@@ -10,7 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Mobsites.AspNetCore.Identity.Cosmos" Version="2.1.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AspNetCore.Identity.Cosmos.csproj" />
   </ItemGroup>
 
 </Project>
