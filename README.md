@@ -26,7 +26,7 @@ Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v
 
 ## Getting Started
 
-Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below:
+Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below.
 
 **NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [here](#extending-cosmos-identity-using-a-different-partition-key-path) for guidance).**
 
@@ -232,23 +232,24 @@ public void ConfigureServices(IServiceCollection services)
 #### Extending the other base identity classes
 
 The other base identity classes can be extended as well. Just follow the steps [above](#extending-just-the-base-identityuser-class), extending the desired classes and using the correct generic version of the services extension method `AddDefaultCosmosIdentity`.
+
 #### Extending Cosmos Identity using a different partition key path
 
-If the container to be used as the identity store already exists and is used to house other application model types but already has a set partition key path that is not `/PartitionKey`, then the default storage provider `CosmosStorageProvider` can be configured to use a different partition key path. Follow the steps outlined above and extend **all** of the base identity classes with the following caveats:
+If the container to be used as the identity store already exists and is used to house other application model types but already has a set partition key path that is not `/PartitionKey`, then the default storage provider can be configured to use a different partition key path. Follow the steps outlined above and extend **all** of the base identity classes with the following caveats:
 
-1. Add the following key-value pair to appsettings.json using the partition key path for the existing container as the value:
+1. Set `options.ContainerProperties.PartitionKeyPath` to the value of the partition key path for the existing container:
 
-```
+``` csharp
+options.ContainerProperties = new ContainerProperties
 {
-  ...
-  "CosmosStorageProviderPartitionKeyPath": "{partition-key-path}",
-  ...
-}
+    Id = "{container-id}",
+    PartitionKeyPath = "{desired-partition-key-path}"
+};
 ```
 
 2. Make sure that **each** of the extended identity models contain a public property that matches the partition key path. Thus, if the container that will be used has a partition path of `/Discriminator`, then each extended identity model will have a public property named `Discriminator`.
 
-3. Finally, override the base class virtual property `PartitionKey` in **each** extended identity model to contain the same value of the partition key path property:
+3. Finally, override the base class virtual property `PartitionKey` in **each** extended identity model to contain the same value of the partition key path property (in this case, the example assumes that the property Discriminator is the partition key path):
 
 ```csharp
 // Override Base property and assign correct Partition Key value.
