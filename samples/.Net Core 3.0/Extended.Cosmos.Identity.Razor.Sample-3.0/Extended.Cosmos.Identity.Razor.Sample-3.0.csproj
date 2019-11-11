@@ -9,11 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\src\AspNetCore.Identity.Cosmos.csproj" />
+    <PackageReference Include="Mobsites.AspNetCore.Identity.Cosmos" Version="3.0.0" />
   </ItemGroup>
 
 </Project>
