@@ -263,7 +263,7 @@ The default storage provider `CosmosStorageProvider` can be extended or complete
 ```csharp
 public class ExtendedCosmosStorageProvider : CosmosStorageProvider
 {
-    public ExtendedCosmosStorageProvider(IConfiguration configuration) : base(configuration)
+    public ExtendedCosmosStorageProvider(IOptions<CosmosStorageProviderOptions> optionsAccessor) : base(optionsAccessor)
     {
         // ToDo: Add members for handling other application model types not directly related to identity.
         //       And/or have other application model types implement the ICosmosStorageType interface 
@@ -274,11 +274,11 @@ public class ExtendedCosmosStorageProvider : CosmosStorageProvider
 
 This is the simplest of the two approaches as the identity implementation is already taken care of by the base `CosmosStorageProvider`, allowing for other members to be added to handle special use cases for other application model types. The inherited members, such as `CreateAsync`, can be used for other application model types provided that the types implement the `ICosmosStorageType` interface. 
 
-The steps for setting up an extended implementation of `CosmosStorageProvider` are fairly similiar to the steps outlined above except that the first type parameter to the generic `AddCosmosIdentity` services extension method would be the new extended (or derived) type.
+The steps for setting up an extended implementation of `CosmosStorageProvider` are fairly similiar to the steps outlined above except that the first type parameter to the non-default generic services extension methods `AddCosmosStorageProvider` and `AddCosmosIdentity` would be the new extended (or derived) type.
 
 As for completely replacing `CosmosStorageProvider` altogether, the new custom type would have to implement the `IIdentityStorageProvider` interface. The [source code](src/Storage/CosmosStorageProvider.cs) for `CosmosStorageProvider` can be used as a guide or not. It's totally up to you at this point.
 
-**NOTE: All of the overloaded `AddCosmosIdentity` services extension methods use the `AddSingleton` services extension method to register the storage provider for dependency injection. The Azure Cosmos team actually recommends doing this as it is better performant to initiallize the cosmos client once on startup.**
+**NOTE: All of the overloaded `AddCosmosStorageProvider` services extension methods use the `AddSingleton` services extension method to register the storage provider for dependency injection. The Azure Cosmos team actually recommends doing this as it is better performant to initiallize the cosmos client once on startup.**
 
 ## Samples
 
