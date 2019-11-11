@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Mobsites.AspNetCore.Identity.Cosmos;
@@ -30,11 +31,30 @@ namespace Default.Cosmos.Identity.Razor.Sample_2._2
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Add default Cosmos Identity Implementation.
-            // Passing in Identity options are...well, optional.
+            // Register the default storage provider, passing in setup options if any.
+            // The default behavior without any setup options is to use the Azure Cosmos DB Emulator with default names for database, container, and partition key path.
             services
-                //.AddCosmosIdentity()
-                .AddCosmosIdentity(options =>
+                .AddCosmosStorageProvider(options =>
+                {
+                    //options.ConnectionString defaults to the default Azure Cosmos DB Emulator connection string, which is what is desired here for the sample.
+                    options.CosmosClientOptions = new CosmosClientOptions
+                    {
+                        SerializerOptions = new CosmosSerializationOptions
+                        {
+                            IgnoreNullValues = false
+                        }
+                    };
+                    options.DatabaseId = "DefaultCosmosIdentity_2_2";
+                    options.ContainerProperties = new ContainerProperties
+                    {
+                        Id = "Data",
+                        //PartitionKeyPath defaults to "/PartitionKey", which is what is desired for the default setup.
+                    };
+                });
+
+            // Add Cosmos Identity using the default storage provider and default identity models, passing in Identity options if any.
+            services
+                .AddDefaultCosmosIdentity(options =>
                 {
                     // User settings
                     options.User.RequireUniqueEmail = true;

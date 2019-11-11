@@ -1,7 +1,6 @@
 ﻿// © 2019 Mobsites. All rights reserved.
 // Licensed under the MIT License.
 
-using Mobsites.AspNetCore.Identity.Cosmos.Models;
 using System;
 
 namespace Mobsites.AspNetCore.Identity.Cosmos

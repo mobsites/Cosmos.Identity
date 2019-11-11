@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Net;
@@ -27,51 +27,38 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <summary>
         ///     Constructs a new instance of <see cref="CosmosStorageProvider"/>.
         /// </summary>
-        /// <param name="configuration">The application configuration settings.</param>
-        public CosmosStorageProvider(IConfiguration configuration)
+        /// <param name="optionsAccessor">The accessor used to access the <see cref="CosmosStorageProviderOptions"/>.</param>
+        public CosmosStorageProvider(IOptions<CosmosStorageProviderOptions> optionsAccessor)
         {
-            var connectionString = configuration.GetConnectionString("CosmosStorageProvider");
-            if (string.IsNullOrWhiteSpace(connectionString))
+            var options = optionsAccessor?.Value ?? new CosmosStorageProviderOptions();
+            var containerProperties = options.ContainerProperties ?? new ContainerProperties { Id = "IdentityContainer", PartitionKeyPath = "/PartitionKey" };
+
+            if (string.IsNullOrEmpty(options.ConnectionString))
             {
-                throw new Exception("No connection string.");
+                throw new Exception($"{nameof(CosmosStorageProvider)}(): No connection string provided.");
             }
-            var databaseId = configuration["CosmosStorageProviderDatabaseId"];
-            if (string.IsNullOrWhiteSpace(databaseId))
+            if (string.IsNullOrEmpty(options.DatabaseId))
             {
-                throw new Exception("No database id.");
+                throw new Exception($"{nameof(CosmosStorageProvider)}(): No database id provided.");
             }
-            var containerId = configuration["CosmosStorageProviderContainerId"];
-            if (string.IsNullOrWhiteSpace(containerId))
+            if (string.IsNullOrEmpty(containerProperties.Id))
             {
-                throw new Exception("No container id.");
+                throw new Exception($"{nameof(CosmosStorageProvider)}(): No container id provided.");
             }
-            var partitionKeyPath = configuration["CosmosStorageProviderPartitionKeyPath"];
-            if (string.IsNullOrWhiteSpace(partitionKeyPath))
+            if (string.IsNullOrEmpty(containerProperties.PartitionKeyPath))
             {
-                // Defaults to known-property "PartitionKey" on base Identity models under namespace Mobsites.AspNetCore.Identity.Cosmos.
-                partitionKeyPath = "/PartitionKey";
+                containerProperties.PartitionKeyPath = "/PartitionKey";
             }
-            else
+            if (!containerProperties.PartitionKeyPath.StartsWith("/"))
             {
-                if (!partitionKeyPath.StartsWith("/"))
-                {
-                    partitionKeyPath = "/" + partitionKeyPath;
-                }
+                containerProperties.PartitionKeyPath = "/" + containerProperties.PartitionKeyPath;
             }
 
-            cosmosClient = new CosmosClient(
-                connectionString,
-                new CosmosClientOptions
-                {
-                    SerializerOptions = new CosmosSerializationOptions
-                    {
-                        IgnoreNullValues = false
-                    }
-                });
+            cosmosClient = new CosmosClient(options.ConnectionString, options.CosmosClientOptions);
 
-            database = cosmosClient.CreateDatabaseIfNotExistsAsync(databaseId).Result;
+            database = cosmosClient.CreateDatabaseIfNotExistsAsync(options.DatabaseId, options.DatabaseThroughput, options.DatabaseRequestOptions).Result;
 
-            Container = database.CreateContainerIfNotExistsAsync(containerId, partitionKeyPath).Result;
+            Container = database.CreateContainerIfNotExistsAsync(options.ContainerProperties, options.ContainerThroughput, options.ContainerRequestOptions).Result;
         }
 
         #endregion

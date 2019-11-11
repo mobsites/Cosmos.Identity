@@ -13,8 +13,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>mobsites-logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Exposed identity container to support extended approach. Also exposed three Cosmos meta-properties.</PackageReleaseNotes>
-    <PackageVersion>2.1.0</PackageVersion>
+    <PackageReleaseNotes>Implemented the IOptions pattern, allowing for more control over configuring the default storage provider, including the client it uses, and the database and container it creates or connects to.</PackageReleaseNotes>
+    <PackageVersion>3.0.0</PackageVersion>
     <PackageTags>identity;membership;storage provider;azure;cosmos;cosmosdb;documentdb;nosql;netstandard;dotnetcore;netcore;aspnetcore</PackageTags>
     <PackageProjectUrl>https://github.com/Mobsites/AspNetCore.Identity.Cosmos</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>

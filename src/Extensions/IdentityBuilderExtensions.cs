@@ -15,17 +15,17 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <summary>
         ///     Adds a Cosmos implementation of identity information stores.
         /// </summary>
-        /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
+        /// <typeparam name="TCosmosStorageProvider">The type representing a Cosmos storage provider.</typeparam>
         /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
         /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
-        public static IdentityBuilder AddCosmosStores<TCustomStorageProvider>(this IdentityBuilder builder)
-            where TCustomStorageProvider : IIdentityStorageProvider
-            => builder.AddCosmosStores<TCustomStorageProvider, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim>();
+        public static IdentityBuilder AddCosmosStores<TCosmosStorageProvider>(this IdentityBuilder builder)
+            where TCosmosStorageProvider : IIdentityStorageProvider
+            => builder.AddCosmosStores<TCosmosStorageProvider, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim>();
 
         /// <summary>
         ///     Adds a Cosmos implementation of identity information stores.
         /// </summary>
-        /// <typeparam name="TCustomStorageProvider">The type representing a custom storage provider.</typeparam>
+        /// <typeparam name="TCosmosStorageProvider">The type representing a Cosmos storage provider.</typeparam>
         /// <typeparam name="TUserClaim">The type representing a user claim.</typeparam>
         /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
         /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
@@ -33,8 +33,8 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
         /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
         /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
         /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
-        public static IdentityBuilder AddCosmosStores<TCustomStorageProvider,TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(this IdentityBuilder builder)
-            where TCustomStorageProvider : IIdentityStorageProvider
+        public static IdentityBuilder AddCosmosStores<TCosmosStorageProvider,TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(this IdentityBuilder builder)
+            where TCosmosStorageProvider : IIdentityStorageProvider
             where TUserClaim : IdentityUserClaim, new()
             where TUserRole : IdentityUserRole, new()
             where TUserLogin : IdentityUserLogin, new()
@@ -82,7 +82,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
             }
 
             Type userStoreType = typeof(UserStore<,,,,,,,>).MakeGenericType(
-                typeof(TCustomStorageProvider),
+                typeof(TCosmosStorageProvider),
                 userType,
                 roleType, 
                 typeof(TUserClaim), 
@@ -92,7 +92,7 @@ namespace Mobsites.AspNetCore.Identity.Cosmos
                 typeof(TRoleClaim));
 
             Type roleStoreType = typeof(RoleStore<,,,>).MakeGenericType(
-                typeof(TCustomStorageProvider),
+                typeof(TCosmosStorageProvider),
                 roleType,
                 typeof(TUserRole),
                 typeof(TRoleClaim));

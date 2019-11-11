@@ -1,9 +1,12 @@
-﻿using System;
+﻿// © 2019 Mobsites. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Mobsites.AspNetCore.Identity.Cosmos.Models
+namespace Mobsites.AspNetCore.Identity.Cosmos
 {
     public class UnixDateTimeConverter : DateTimeConverterBase
     {

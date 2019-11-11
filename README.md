@@ -26,7 +26,7 @@ Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v
 
 ## Getting Started
 
-Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below. 
+Using the default implementation of Cosmos Identity is fairly straightforward. Just follow the steps outlined below.
 
 **NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [here](#extending-cosmos-identity-using-a-different-partition-key-path) for guidance).**
 
@@ -36,43 +36,55 @@ Using the default implementation of Cosmos Identity is fairly straightforward. J
 Install-Package Mobsites.AspNetCore.Identity.Cosmos
 ```
 
-2. Add a Cosmos connection string to appsettings.json using the name `CosmosStorageProvider`:
-
-```
-{
-  "ConnectionStrings": {
-    "CosmosStorageProvider": "{cosmos-connection-string}"
-  },
-  ...
-}
-```
-
-3. Add the following key-value pairs to appsettings.json using the ids of the Cosmos database and container for values:
-
-```
-{
-  ...
-  "CosmosStorageProviderDatabaseId": "{databaseId}",
-  "CosmosStorageProviderContainerId": "{containerId}",
-  ...
-}
-```
-
-4. Add the following `using` statement to the Startup class:
+2. Add the following `using` statement to the Startup class:
 
 ```csharp
 using Mobsites.AspNetCore.Identity.Cosmos;
 ```
 
-5. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity. Pass in Identity options or not. Add any other `IdentityBuilder` methods:
+3. In the same class, register the default Cosmos storage provider:
+
+**NOTE: The storage provider options allow you to fully configure the Cosmos client, database, and container used by the default Cosmos storage provider.**
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    // Add default Cosmos Identity Implementation.
-    // Passing in Identity options are...well, optional.
+    // Register the default storage provider, passing in setup options if any.
+    // The default behavior without any setup options is to use the Azure Cosmos DB Emulator 
+    // with default names for database, container, and partition key path.
     services
-        .AddCosmosIdentity(options =>
+        .AddCosmosStorageProvider(options =>
+        {
+            options.ConnectionString = "{cosmos-connection-string}";
+            options.CosmosClientOptions = new CosmosClientOptions
+            {
+                SerializerOptions = new CosmosSerializationOptions
+                {
+                    IgnoreNullValues = false
+                }
+            };
+            options.DatabaseId = "{database-id}";
+            options.ContainerProperties = new ContainerProperties
+            {
+                Id = "{container-id}",
+                //PartitionKeyPath defaults to "/PartitionKey", which is what is desired for the default setup.
+            };
+        });
+}
+```
+
+4. Then add default Cosmos Identity implementation:
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    /*
+     * Code omitted for berivty.
+     */
+     
+    // Add default Cosmos Identity implementation, passing in Identity options if any.
+    services
+        .AddDefaultCosmosIdentity(options =>
         {
             // User settings
             options.User.RequireUniqueEmail = true;
@@ -100,7 +112,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-6. Add one or both of the following `using` statements anywhere else that may be needed to clear up any conflict with the namespace `Microsoft.AspNetCore.Identity`:
+5. Add one or both of the following `using` statements anywhere else that may be needed to clear up any conflict with the namespace `Microsoft.AspNetCore.Identity`:
 
 ```csharp
 using IdentityUser = Mobsites.AspNetCore.Identity.Cosmos.IdentityUser;
@@ -108,7 +120,7 @@ using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
 
 ```
 
-7. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
+6. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
 
 ## Extending Cosmos Identity
 
@@ -124,29 +136,7 @@ If only the base `IdentityUser` class needs to be extended, and a partition key 
 Install-Package Mobsites.AspNetCore.Identity.Cosmos
 ```
 
-2. Add a Cosmos connection string to appsettings.json using the name `CosmosStorageProvider`:
-
-```
-{
-  "ConnectionStrings": {
-    "CosmosStorageProvider": "{cosmos-connection-string}"
-  },
-  ...
-}
-```
-
-3. Add the following key-value pairs to appsettings.json using the ids of the Cosmos database and container for values:
-
-```
-{
-  ...
-  "CosmosStorageProviderDatabaseId": "{databaseId}",
-  "CosmosStorageProviderContainerId": "{containerId}",
-  ...
-}
-```
-
-4. Create a new model that inherits the base `IdentityUser` class from the `Mobsites.AspNetCore.Identity.Cosmos` namespace:
+2. Create a new model that inherits the base `IdentityUser` class from the `Mobsites.AspNetCore.Identity.Cosmos` namespace:
 
 ```csharp
 using Mobsites.AspNetCore.Identity.Cosmos;
@@ -160,25 +150,56 @@ namespace MyExtendedExamples
     }
 }
 ```
-5. Add the following `using` statements to the Startup class (one is the namespace which contains the extended `IdentityUser` model):
+3. Add the following `using` statements to the Startup class (one is the namespace which contains the extended `IdentityUser` model):
 
 ```csharp
 using Mobsites.AspNetCore.Identity.Cosmos;
 using MyExtendedExamples;
 ```
 
-6. In the same class, wire up services in `ConfigureServices(IServiceCollection services)` to add Cosmos Identity using the generic `AddCosmosIdentity<TCustomStorageProvider, TUser>` services extension method. Pass in Identity options or not. Add any other `IdentityBuilder` methods:
+4. In the same class, register the default Cosmos storage provider:
 
-**Note below how `CosmosStorageProvider` is the first type parameter used in the generic version of `AddCosmosIdentity`. This is the default storage provider implementation, which can be replaced with a customized implementation. Keep reading to learn how.**
+**NOTE: The storage provider options allow you to fully configure the Cosmos client, database, and container used by the default Cosmos storage provider.**
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    // Add default Cosmos Identity Implementation using extended IdentityUser model.
-    // First type parameter is the default storage provider implementation. Not looking to customize here.
-    // Passing in Identity options are...well, optional.
+    // Register the default storage provider, passing in setup options if any.
+    // The default behavior without any setup options is to use the Azure Cosmos DB Emulator 
+    // with default names for database, container, and partition key path.
     services
-        .AddCosmosIdentity<CosmosStorageProvider, ApplicationUser>(options =>
+        .AddCosmosStorageProvider(options =>
+        {
+            options.ConnectionString = "{cosmos-connection-string}";
+            options.CosmosClientOptions = new CosmosClientOptions
+            {
+                SerializerOptions = new CosmosSerializationOptions
+                {
+                    IgnoreNullValues = false
+                }
+            };
+            options.DatabaseId = "{database-id}";
+            options.ContainerProperties = new ContainerProperties
+            {
+                Id = "{container-id}",
+                //PartitionKeyPath defaults to "/PartitionKey", which is what is desired for the default setup.
+            };
+        });
+}
+```
+
+5. Then add default Cosmos Identity implementation using the correct generic extension method with the extended type:
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    /*
+     * Code omitted for berivty.
+     */
+     
+    // Add default Cosmos Identity implementation, passing in Identity options if any.
+    services
+        .AddDefaultCosmosIdentity<ApplicationUser>(options =>
         {
             // User settings
             options.User.RequireUniqueEmail = true;
@@ -206,37 +227,29 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-7. Add one or both of the following `using` statements anywhere else that may be needed to clear up any conflict with the namespace `Microsoft.AspNetCore.Identity`:
-
-```csharp
-using IdentityUser = Mobsites.AspNetCore.Identity.Cosmos.IdentityUser;
-using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
-
-```
-
-8. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
+6. Safely remove any dependencies to `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
 
 #### Extending the other base identity classes
 
-The other base identity classes can be extended as well. Just follow the steps [above](#extending-just-the-base-identityuser-class), extending the desired classes and using the correct generic version of `AddCosmosIdentity` with `CosmosStorageProvider` as the first type parameter.
+The other base identity classes can be extended as well. Just follow the steps [above](#extending-just-the-base-identityuser-class), extending the desired classes and using the correct generic version of the services extension method `AddDefaultCosmosIdentity`.
 
 #### Extending Cosmos Identity using a different partition key path
 
-If the container to be used as the identity store already exists and is used to house other application model types but already has a set partition key path that is not `/PartitionKey`, then the default storage provider `CosmosStorageProvider` can be configured to use a different partition key path. Follow the steps outlined above and extend **all** of the base identity classes with the following caveats:
+If the container to be used as the identity store already exists and is used to house other application model types but already has a set partition key path that is not `/PartitionKey`, then the default storage provider can be configured to use a different partition key path. Follow the steps outlined above and extend **all** of the base identity classes with the following caveats:
 
-1. Add the following key-value pair to appsettings.json using the partition key path for the existing container as the value:
+1. Set `options.ContainerProperties.PartitionKeyPath` to the value of the partition key path for the existing container:
 
-```
+``` csharp
+options.ContainerProperties = new ContainerProperties
 {
-  ...
-  "CosmosStorageProviderPartitionKeyPath": "{partition-key-path}",
-  ...
-}
+    Id = "{container-id}",
+    PartitionKeyPath = "{desired-partition-key-path}"
+};
 ```
 
 2. Make sure that **each** of the extended identity models contain a public property that matches the partition key path. Thus, if the container that will be used has a partition path of `/Discriminator`, then each extended identity model will have a public property named `Discriminator`.
 
-3. Finally, override the base class virtual property `PartitionKey` in **each** extended identity model to contain the same value of the partition key path property:
+3. Finally, override the base class virtual property `PartitionKey` in **each** extended identity model to contain the same value of the partition key path property (in this case, the example assumes that the property Discriminator is the partition key path):
 
 ```csharp
 // Override Base property and assign correct Partition Key value.
@@ -250,7 +263,7 @@ The default storage provider `CosmosStorageProvider` can be extended or complete
 ```csharp
 public class ExtendedCosmosStorageProvider : CosmosStorageProvider
 {
-    public ExtendedCosmosStorageProvider(IConfiguration configuration) : base(configuration)
+    public ExtendedCosmosStorageProvider(IOptions<CosmosStorageProviderOptions> optionsAccessor) : base(optionsAccessor)
     {
         // ToDo: Add members for handling other application model types not directly related to identity.
         //       And/or have other application model types implement the ICosmosStorageType interface 
@@ -261,11 +274,11 @@ public class ExtendedCosmosStorageProvider : CosmosStorageProvider
 
 This is the simplest of the two approaches as the identity implementation is already taken care of by the base `CosmosStorageProvider`, allowing for other members to be added to handle special use cases for other application model types. The inherited members, such as `CreateAsync`, can be used for other application model types provided that the types implement the `ICosmosStorageType` interface. 
 
-The steps for setting up an extended implementation of `CosmosStorageProvider` are fairly similiar to the steps outlined above except that the first type parameter to the generic `AddCosmosIdentity` services extension method would be the new extended (or derived) type.
+The steps for setting up an extended implementation of `CosmosStorageProvider` are fairly similiar to the steps outlined above except that the first type parameter to the non-default generic services extension methods `AddCosmosStorageProvider` and `AddCosmosIdentity` would be the new extended (or derived) type.
 
 As for completely replacing `CosmosStorageProvider` altogether, the new custom type would have to implement the `IIdentityStorageProvider` interface. The [source code](src/Storage/CosmosStorageProvider.cs) for `CosmosStorageProvider` can be used as a guide or not. It's totally up to you at this point.
 
-**NOTE: All of the overloaded `AddCosmosIdentity` services extension methods use the `AddSingleton` services extension method to register the storage provider for dependency injection. The Azure Cosmos team actually recommends doing this as it is better performant to initiallize the cosmos client once on startup.**
+**NOTE: All of the overloaded `AddCosmosStorageProvider` services extension methods use the `AddSingleton` services extension method to register the storage provider for dependency injection. The Azure Cosmos team actually recommends doing this as it is better performant to initiallize the cosmos client once on startup.**
 
 ## Samples
 

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mobsites.AspNetCore.Identity.Cosmos;
 using Extended.Cosmos.Identity.Razor.Sample_3._0.Extensions;
+using Microsoft.Azure.Cosmos;
 
 namespace Extended.Cosmos.Identity.Razor.Sample_3._0
 {
@@ -22,9 +23,30 @@ namespace Extended.Cosmos.Identity.Razor.Sample_3._0
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add Cosmos Identity Implementation with custom identity container and extended identity models.
-            // First type parameter is an extended storage provider implementation. Not looking to customize here, just extend.
-            // Passing in Identity options are...well, optional.
+            // Register the extended storage provider, passing in setup options if any.
+            // When extending the default Cosmos storage provider class "CosmosStorageProvdier", 
+            // the default behavior without any setup options is to use the Azure Cosmos DB Emulator with default names for database, container, and partition key path.
+            services
+                .AddCosmosStorageProvider<ExtendedCosmosStorageProvider>(options =>
+                {
+                    //options.ConnectionString defaults to the default Azure Cosmos DB Emulator connection string, which is what is desired here for the sample.
+                    options.CosmosClientOptions = new CosmosClientOptions
+                    {
+                        SerializerOptions = new CosmosSerializationOptions
+                        {
+                            IgnoreNullValues = false
+                        }
+                    };
+                    options.DatabaseId = "ExtendedCosmosIdentity_3_0";
+                    options.ContainerProperties = new ContainerProperties
+                    {
+                        Id = "Data",
+                        PartitionKeyPath = "/Discriminator"
+                    };
+                });
+
+
+            // Add Cosmos Identity using the extended storage provider and extended identity models, passing in Identity options if any.
             services
                 .AddCosmosIdentity<ExtendedCosmosStorageProvider, ApplicationUser, ApplicationRole, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>(options =>
                 {
@@ -48,7 +70,7 @@ namespace Extended.Cosmos.Identity.Razor.Sample_3._0
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            // Add Razor
+            // Add Razor Pages
             services
                 .AddRazorPages();
         }
