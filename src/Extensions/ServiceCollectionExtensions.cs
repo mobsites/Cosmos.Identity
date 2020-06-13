@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
-namespace Mobsites.AspNetCore.Identity.Cosmos
+namespace Mobsites.Cosmos.Identity
 {
     /// <summary>
     ///     Contains extension methods to <see cref="IServiceCollection"/> for configuring Cosmos Identity.

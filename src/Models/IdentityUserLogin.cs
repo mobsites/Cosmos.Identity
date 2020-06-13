@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Mobsites.AspNetCore.Identity.Cosmos
+namespace Mobsites.Cosmos.Identity
 {
     /// <summary>
     ///     The required Cosmos Identity implementation of an identity user login which uses a string as a primary key.

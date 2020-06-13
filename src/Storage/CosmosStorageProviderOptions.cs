@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 
-namespace Mobsites.AspNetCore.Identity.Cosmos
+namespace Mobsites.Cosmos.Identity
 {
     public class CosmosStorageProviderOptions
     {

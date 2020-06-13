@@ -10,7 +10,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Mobsites.AspNetCore.Identity.Cosmos
+namespace Mobsites.Cosmos.Identity
 {
     /// <summary>
     ///     Represents a new instance of a default Cosmos storage provider which implements <see cref="IIdentityStorageProvider"/>.

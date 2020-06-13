@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Mobsites.AspNetCore.Identity.Cosmos
+namespace Mobsites.Cosmos.Identity
 {
     /// <summary>
     ///     The interface to properties that the default Cosmos storage provider expects.

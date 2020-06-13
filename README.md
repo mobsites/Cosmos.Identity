@@ -1,20 +1,21 @@
 # Cosmos Identity
 
-Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.0&tabs=visual-studio) that uses [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/) as the identity store. This library supports the same identity use cases and features that the default Entity Framework Core implementation does out of the box.
+Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio) that uses [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/) as the identity store. This library supports the same identity use cases and features that the default Entity Framework Core implementation does out of the box.
 
 **NOTE: In step with Azure Cosmos, which has moved away from non-partitioned containers, this library supports partitioned containers only.**
 
 ## Dependencies
 
 ###### .NETStandard 2.0
-* Microsoft.Azure.Cosmos (>= 3.4.1)
+
+* Microsoft.Azure.Cosmos (>= 3.9.1)
 * Microsoft.AspNetCore.Identity (>= 2.2.0)
-* Microsoft.Extensions.Identity.Stores (>= 2.2.0)
-* System.Text.Json (>= 4.6.0)
+* Microsoft.Extensions.Identity.Stores (>= 3.1.5)
+* System.Text.Json (>= 4.7.2)
 
 ## Design and Development
 
-The open-source [Microsoft.AspNetCore.Identity](https://github.com/aspnet/AspNetCore/tree/master/src/Identity) library and its [Microsoft.AspNetCore.Identity.EntityFrameworkCore](https://github.com/aspnet/AspNetCore/tree/master/src/Identity/EntityFrameworkCore/src) implementation were used as the principal guide in design and development. As such, Cosmos Identity supports the same identity use cases and features that the default `Microsoft.AspNetCore.Identity.EntityFrameworkCore` implementation does out of the box. 
+The open-source [Microsoft.AspNetCore.Identity](https://github.com/aspnet/AspNetCore/tree/master/src/Identity) library and its [EntityFrameworkCore](https://github.com/aspnet/AspNetCore/tree/master/src/Identity/EntityFrameworkCore/src) implementation were used as the principal guide in design and development. As such, Cosmos Identity supports the same identity use cases and features that the default `Microsoft.AspNetCore.Identity.EntityFrameworkCore` implementation does out of the box. 
 
 Also considered during development were two third party Cosmos-based solutions:
 
@@ -22,7 +23,7 @@ Also considered during development were two third party Cosmos-based solutions:
 
 * f14shm4n's [AspNetCore.Identity.DocumentDb](https://github.com/f14shm4n/AspNetCore.Identity.DocumentDb), which uses the newer `Microsoft.Azure.Cosmos` SDK.
 
-Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v3/tree/master/Microsoft.Azure.Cosmos.Samples) from the open-source [.NET SDK for Azure Cosmos DB](https://github.com/Azure/azure-cosmos-dotnet-v3) were perused for learning how best to use the new SDK.
+Last but not least, the [samples](https://github.com/Azure/azure-cosmos-dotnet-v3/tree/master/Microsoft.Azure.Cosmos.Samples) from the open-source [.NET SDK for Azure Cosmos DB](https://github.com/Azure/azure-cosmos-dotnet-v3) were perused for learning how best to use the newer `Microsoft.Azure.Cosmos` SDK.
 
 ## Getting Started
 
@@ -30,16 +31,16 @@ Using the default implementation of Cosmos Identity is fairly straightforward. J
 
 **NOTE: There is one caveat to keep in mind when following the steps below—the partition key path will be set to `/PartitionKey` for a newly created identity container. If the container to be used for the identity store already exists, then the container must have an existing partition key path of `/PartitionKey` in order to use the steps below, else an extended or customized Cosmos Identity approach must be used (see [here](#extending-cosmos-identity-using-a-different-partition-key-path) for guidance).**
 
-1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
+1. Install [Nuget](https://www.nuget.org/packages/Mobsites.Cosmos.Identity) package:
 
 ```shell
-Install-Package Mobsites.AspNetCore.Identity.Cosmos
+dotnet add package Mobsites.Cosmos.Identity
 ```
 
 2. Add the following `using` statement to the Startup class:
 
 ```csharp
-using Mobsites.AspNetCore.Identity.Cosmos;
+using Mobsites.Cosmos.Identity;
 ```
 
 3. In the same class, register the default Cosmos storage provider:
@@ -115,8 +116,8 @@ public void ConfigureServices(IServiceCollection services)
 5. Add one or both of the following `using` statements anywhere else that may be needed to clear up any conflict with the namespace `Microsoft.AspNetCore.Identity`:
 
 ```csharp
-using IdentityUser = Mobsites.AspNetCore.Identity.Cosmos.IdentityUser;
-using IdentityRole = Mobsites.AspNetCore.Identity.Cosmos.IdentityRole;
+using IdentityUser = Mobsites.Cosmos.Identity.IdentityUser;
+using IdentityRole = Mobsites.Cosmos.Identity.IdentityRole;
 
 ```
 
@@ -130,16 +131,16 @@ Cosmos Identity can be extended much the same way that `Microsoft.AspNetCore.Ide
 
 If only the base `IdentityUser` class needs to be extended, and a partition key path of `/PartitionKey` is non-conflicting (see [Getting Started](#getting-started) above on why this is important), then follow the steps below.
 
-1. Install via [Nuget.org](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos):
+1. Install [Nuget](https://www.nuget.org/packages/Mobsites.Cosmos.Identity) package:
 
 ```shell
-Install-Package Mobsites.AspNetCore.Identity.Cosmos
+dotnet add package Mobsites.Cosmos.Identity
 ```
 
-2. Create a new model that inherits the base `IdentityUser` class from the `Mobsites.AspNetCore.Identity.Cosmos` namespace:
+2. Create a new model that inherits the base `IdentityUser` class from the `Mobsites.Cosmos.Identity` namespace:
 
 ```csharp
-using Mobsites.AspNetCore.Identity.Cosmos;
+using Mobsites.Cosmos.Identity;
 
 namespace MyExtendedExamples
 {
@@ -150,10 +151,11 @@ namespace MyExtendedExamples
     }
 }
 ```
+
 3. Add the following `using` statements to the Startup class (one is the namespace which contains the extended `IdentityUser` model):
 
 ```csharp
-using Mobsites.AspNetCore.Identity.Cosmos;
+using Mobsites.Cosmos.Identity;
 using MyExtendedExamples;
 ```
 
@@ -196,7 +198,7 @@ public void ConfigureServices(IServiceCollection services)
     /*
      * Code omitted for berivty.
      */
-     
+
     // Add default Cosmos Identity implementation, passing in Identity options if any.
     services
         .AddDefaultCosmosIdentity<ApplicationUser>(options =>
@@ -282,20 +284,19 @@ As for completely replacing `CosmosStorageProvider` altogether, the new custom t
 
 ## Samples
 
-The samples demonstrate both the default implementation of Cosmos Identity and an extended implementation of Cosmos Identity in a .Net Core 2.2 or 3.0 Razor Pages Web app. They were built using the web app template with individual account users for authentication. Then the Login and Register pages were scaffolded. Finally, Entity Framework Core was stripped out, leaving only `Microsoft.AspNetCore.Identity`. 
+The samples demonstrate both the default implementation of Cosmos Identity and an extended implementation of Cosmos Identity in a .Net Core 3.1 Razor Pages Web app. They were built using the web app template with individual account users for authentication. Then the Login and Register pages were scaffolded. Finally, Entity Framework Core was stripped out, leaving only `Microsoft.AspNetCore.Identity`.
 
 **Note: When wiring up your own project, if any of the built-in Identity UI needs to be scaffold, be sure to do so before stripping out Entity Framework Core. The identity scaffolding engine requires a DbContext class. Otherwise, you will have to build any Identity UI manually.**
 
 #### Required to run the samples
 
-As noted above, the samples are .Net Core 2.2 and 3.0 Razor Pages Web apps, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up a sample.
+As noted above, the samples are .Net Core 3.1 Razor Pages Web apps, so a suitable dev environment is necessary. Other than that, download and install the [Azure Cosmos Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-release-notes) and fire up a sample.
 
-#### On first running one of the samples
 
 ![Sample Home Page](assets/sample-home-page-no-users.png)
 
-#### Register users
+#### Register users:
 ![Sample Register Page](assets/sample-register-page.png)
 
-#### After Registering Users
+#### After Registering Users:
 ![Sample Home Page With Users](assets/sample-home-page-with-users.png)

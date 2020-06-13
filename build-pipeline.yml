@@ -1,0 +1,32 @@
+# Copyright (c) 2020 Allan Mobley. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+# Specify a particular version of the .NET SDK
+- task: UseDotNet@2
+  displayName: 'Set SDK'
+  inputs:
+    packageType: sdk
+    version: 3.1.300
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+# Build samples. Not strictly required to create the package,
+# but we want the pipeline to halt if this step fails.
+- script: dotnet build --configuration Release
+  workingDirectory: samples/Default.Cosmos.Identity.Razor.Sample
+  displayName: Build Default.Cosmos.Identity.Razor.Sample
+- script: dotnet build --configuration Release
+  workingDirectory: samples/Extended.Cosmos.Identity.Razor.Sample
+  displayName: Build Extended.Cosmos.Identity.Razor.Sample
+
+# Create the NuGet package file
+- script: dotnet pack --configuration Release
+  workingDirectory: src
+  displayName: Pack Src
