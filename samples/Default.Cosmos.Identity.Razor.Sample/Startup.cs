@@ -39,7 +39,7 @@ namespace Default.Cosmos.Identity.Razor.Sample
                     options.DatabaseId = "DefaultCosmosIdentity";
                     options.ContainerProperties = new ContainerProperties
                     {
-                        Id = "Data",
+                        Id = "Identity",
                         //PartitionKeyPath defaults to "/PartitionKey", which is what is desired for the default setup.
                     };
                 });

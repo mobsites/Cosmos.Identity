@@ -1,5 +1,15 @@
 # Cosmos Identity
 
+by <a href="https://www.mobsites.com"><img align="center" src="./src/assets/mobsites-logo.png" width="36" height="36" style="padding-top: 20px;" />obsites</a>
+
+#### [Cosmos.Identity](https://www.nuget.org/packages/Mobsites.Cosmos.Identity)
+
+![Nuget](https://img.shields.io/nuget/v/Mobsites.Cosmos.Identity) ![Nuget](https://img.shields.io/nuget/dt/Mobsites.Cosmos.Identity) [![Build Status](https://dev.azure.com/Mobsites-US/Cosmos.Identity/_apis/build/status/Build?branchName=master)](https://dev.azure.com/Mobsites-US/Cosmos.Identity/_build/latest?definitionId=29&branchName=master)
+
+#### a.k.a [AspNetCore.Identity.Cosmos](https://www.nuget.org/packages/Mobsites.AspNetCore.Identity.Cosmos)
+
+![Nuget](https://img.shields.io/nuget/v/Mobsites.AspNetCore.Identity.Cosmos) ![Nuget](https://img.shields.io/nuget/dt/Mobsites.AspNetCore.Identity.Cosmos)
+
 Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio) that uses [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/) as the identity store. This library supports the same identity use cases and features that the default Entity Framework Core implementation does out of the box.
 
 **NOTE: In step with Azure Cosmos, which has moved away from non-partitioned containers, this library supports partitioned containers only.**
@@ -15,7 +25,7 @@ Cosmos Identity is a storage provider for [ASP.NET Core Identity](https://docs.m
 
 ## Design and Development
 
-The open-source [Microsoft.AspNetCore.Identity](https://github.com/aspnet/AspNetCore/tree/master/src/Identity) library and its [EntityFrameworkCore](https://github.com/aspnet/AspNetCore/tree/master/src/Identity/EntityFrameworkCore/src) implementation were used as the principal guide in design and development. As such, Cosmos Identity supports the same identity use cases and features that the default `Microsoft.AspNetCore.Identity.EntityFrameworkCore` implementation does out of the box. 
+The open-source [Microsoft.AspNetCore.Identity](https://github.com/aspnet/AspNetCore/tree/master/src/Identity) library and its [EntityFrameworkCore](https://github.com/aspnet/AspNetCore/tree/master/src/Identity/EntityFrameworkCore/src) implementation were used as the principal guide in design and development. As such, Cosmos Identity supports the same identity use cases and features that the default `Microsoft.AspNetCore.Identity.EntityFrameworkCore` implementation does out of the box.
 
 Also considered during development were two third party Cosmos-based solutions:
 

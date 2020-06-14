@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <Company>Mobsites</Company>
     <Authors>Allan Mobley</Authors>
-    <Copyright>© 2019 Mobsites</Copyright>
+    <Copyright>© 2020 Mobsites</Copyright>
     <Description>A Cosmos storage provider for ASP.NET Core Identity.</Description>
     <PackageId>Mobsites.Cosmos.Identity</PackageId>
     <IsPackable>true</IsPackable>

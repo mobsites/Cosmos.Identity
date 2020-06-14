@@ -1,5 +1,5 @@
-﻿// © 2019 Mobsites. All rights reserved.
-// Licensed under the MIT License.
+﻿// Copyright (c) 2020 Allan Mobley. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System;
 

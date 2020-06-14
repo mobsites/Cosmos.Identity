@@ -40,7 +40,7 @@ namespace Extended.Cosmos.Identity.Razor.Sample
                     options.DatabaseId = "ExtendedCosmosIdentity";
                     options.ContainerProperties = new ContainerProperties
                     {
-                        Id = "Data",
+                        Id = "Identity",
                         PartitionKeyPath = "/Discriminator"
                     };
                 });

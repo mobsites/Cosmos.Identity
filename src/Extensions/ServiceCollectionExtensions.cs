@@ -1,5 +1,5 @@
-﻿// © 2019 Mobsites. All rights reserved.
-// Licensed under the MIT License.
+﻿// Copyright (c) 2020 Allan Mobley. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,6 +99,11 @@ namespace Mobsites.Cosmos.Identity
         /// </summary>
         /// <typeparam name="TUser">The type representing a user.</typeparam>
         /// <typeparam name="TRole">The type representing a role.</typeparam>
+        /// <typeparam name="TUserClaim">The type representing a user claim.</typeparam>
+        /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
+        /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
+        /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
+        /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="IdentityOptions"/>.</param>
         /// <returns>An <see cref="IdentityBuilder"/> for creating and configuring the identity system.</returns>

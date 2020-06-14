@@ -1,5 +1,5 @@
-﻿// © 2019 Mobsites. All rights reserved.
-// Licensed under the MIT License.
+﻿// Copyright (c) 2020 Allan Mobley. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
@@ -17,11 +17,12 @@ namespace Mobsites.Cosmos.Identity
     /// </summary>
     public class CosmosStorageProvider : IIdentityStorageProvider
     {
-        #region Setup
-
         private readonly CosmosClient cosmosClient;
         private readonly Database database;
 
+        /// <summary>
+        ///     Identity container.
+        /// </summary>
         public Container Container { get; set; }
 
         /// <summary>
@@ -61,10 +62,6 @@ namespace Mobsites.Cosmos.Identity
             Container = database.CreateContainerIfNotExistsAsync(options.ContainerProperties, options.ContainerThroughput, options.ContainerRequestOptions).Result;
         }
 
-        #endregion
-
-        #region Queryable Linq Expression
-
         /// <summary>
         ///     Returns a queryable linq expression of the specified <typeparamref name="TCosmosStorageType" />.
         /// </summary>
@@ -80,10 +77,6 @@ namespace Mobsites.Cosmos.Identity
                     PartitionKey = string.IsNullOrEmpty(partitionKey) ? PartitionKey.None : new PartitionKey(partitionKey)
                 });
         }
-
-        #endregion
-
-        #region CreateAsync
 
         /// <summary>
         ///     Creates the specified <paramref name="cosmosStorageType"/> in the store.
@@ -125,10 +118,6 @@ namespace Mobsites.Cosmos.Identity
             return result;
         }
 
-        #endregion
-
-        #region UpdateAsync
-
         /// <summary>
         ///     Updates the specified <paramref name="cosmosStorageType"/> in the store.
         /// </summary>
@@ -168,10 +157,6 @@ namespace Mobsites.Cosmos.Identity
 
             return result;
         }
-
-        #endregion
-
-        #region DeleteAsync
 
         /// <summary>
         ///     Deletes the specified <paramref name="cosmosStorageType"/> from the store.
@@ -213,10 +198,6 @@ namespace Mobsites.Cosmos.Identity
             return result;
         }
 
-        #endregion
-
-        #region FindByIdAsync
-
         /// <summary>
         ///     Finds and returns the specified <typeparamref name="TCosmosStorageType" />, if any, which has the specified <paramref name="id"/>.
         /// </summary>
@@ -248,7 +229,5 @@ namespace Mobsites.Cosmos.Identity
 
             return default;
         }
-
-        #endregion
     }
 }

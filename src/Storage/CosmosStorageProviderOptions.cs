@@ -1,14 +1,15 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿// Copyright (c) 2020 Allan Mobley. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+using Microsoft.Azure.Cosmos;
 
 namespace Mobsites.Cosmos.Identity
 {
+    /// <summary>
+    ///     Options for configuring the Cosmos storage provider. 
+    /// </summary>
     public class CosmosStorageProviderOptions
     {
-        public CosmosStorageProviderOptions()
-        {
-
-        }
-
         /// <summary>
         ///     Gets or sets the connection string to the Azure Cosmos DB service. 
         ///     Defaults to the default Azure Cosmos DB Emulator connection string if not set.
