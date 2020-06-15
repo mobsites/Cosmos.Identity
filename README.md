@@ -47,10 +47,11 @@ Using the default implementation of Cosmos Identity is fairly straightforward. J
 dotnet add package Mobsites.Cosmos.Identity
 ```
 
-2. Add the following `using` statement to the Startup class:
+2. Add the following `using` statements to the Startup class:
 
 ```csharp
 using Mobsites.Cosmos.Identity;
+using Microsoft.Azure.Cosmos;
 ```
 
 3. In the same class, register the default Cosmos storage provider:
@@ -166,6 +167,7 @@ namespace MyExtendedExamples
 
 ```csharp
 using Mobsites.Cosmos.Identity;
+using Microsoft.Azure.Cosmos;
 using MyExtendedExamples;
 ```
 
