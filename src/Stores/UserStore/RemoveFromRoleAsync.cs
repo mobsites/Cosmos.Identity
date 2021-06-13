@@ -56,11 +56,11 @@ namespace Mobsites.Cosmos.Identity
                         // Update user object (default UserManager will actually call UpdateUserAsync(user).
                         if (!string.IsNullOrEmpty(user.FlattenRoleNames))
                         {
-                            user.FlattenRoleNames.Replace(role.Name + ",", string.Empty);
+                            user.FlattenRoleNames = user.FlattenRoleNames.Replace(role.Name + ",", string.Empty);
                         }
                         if (!string.IsNullOrEmpty(user.FlattenRoleIds))
                         {
-                            user.FlattenRoleIds.Replace(role.Id + ",", string.Empty);
+                            user.FlattenRoleIds = user.FlattenRoleIds.Replace(role.Id + ",", string.Empty);
                         }
                     }
                 }
