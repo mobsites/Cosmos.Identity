@@ -53,7 +53,7 @@ namespace Mobsites.Cosmos.Identity
                     {
                         if (!string.IsNullOrEmpty(user.FlattenClaims))
                         {
-                            user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue},", string.Empty);
+                            user.FlattenClaims = user.FlattenClaims.Replace($"{userClaim.ClaimType}|{userClaim.ClaimValue},", string.Empty);
                         }
                     }
                 }
